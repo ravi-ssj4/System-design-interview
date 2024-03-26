@@ -1,3 +1,5 @@
+# Code and example of a paginated api call to get a list of messages for a channel that the user clicked in a slack app using Javascript
+
 For a real-world scenario where you might need to paginate API responses for a messaging app similar to Slack, using Node.js and Express along with a MongoDB database for storing messages could be a practical approach. This example assumes you have MongoDB set up with a collection named `messages` that stores messages for different channels. Each message document might look something like this:
 
 ```json
