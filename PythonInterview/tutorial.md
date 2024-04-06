@@ -414,15 +414,16 @@ A.
 ```python
 import heapq
 
-# under the hood are arrays
+# under the hood are arrays only
 minHeap = []
-heapq.heappush(minHeap, 3)
-heapq.heappush(minHeap, 2)
+heapq.heappush(minHeap, 3) # pushing values in a heap way(build heap) -> O(logn)
+heapq.heappush(minHeap, 2) 
 heapq.heappush(minHeap, 4)
 
 # Min is always at index 0
 print(minHeap[0])
 
+# pop values from the heap and print -> O(nlogn)
 while len(minHeap):
     print(heapq.heappop(minHeap))
 
@@ -441,7 +442,7 @@ while len(maxHeap):
 
 # Build heap from initial values
 arr = [2, 1, 8, 4, 5]
-heapq.heapify(arr)
+heapq.heapify(arr) # takes O(n) time only -> cheaper than building from scratch
 while arr:
     print(heapq.heappop(arr))
 
