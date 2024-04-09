@@ -332,18 +332,259 @@ def solution(n, edges):
 
 ```
 
-### Topological Sort
+## The something before something pattern -> Topological Sort
+
+### Topological Sort - DFS
+```python
+def solution(n, edges):
+    # create the adjList
+    visited = set()
+    stack = []
+
+    def topoSortDFS(node):
+        visited.add(node)
+        for neighbor in adjList[node]:
+            if neighbor not in visited:
+                topoSortDFS(neighbor)
+        stack.append(node)
+            
+    for i in range(n):
+        if i not in visited:
+            topoSortDFS(i)
+    while stack:
+        res.append(stack.pop())
+    return res
+
+```
+
+### Topological Sort - BFS (Kahn's Algo)
+```python
+def solution(n, edges):
+    # create the adjList
+    indegree = [0] * n
+
+    # calculate the indegrees of all vertices
+    for i in range(n):
+        for neighbor in adjList[i]:
+            indegree[neighbor] += 1
+    # add all the vertices with indegree 0 to the queue
+    q = collections.deque()
+    for i in range(n):
+        if indegree[i] == 0:
+            q.append(i)
+    
+    res = []
+    while q:
+        node = q.popleft()
+        res.append(node)
+        for neighbor in adjList[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                q.append(neighbor)
+    
+    return res
+
+```
+
+### Detect cycle Directed Graph - BFS - Topological sort
+```python
+def solution(n, edges):
+    # create the adjList
+    indegree = [0] * n
+
+    # calculate the indegrees of all vertices
+    for i in range(n):
+        for neighbor in adjList[i]:
+            indegree[neighbor] += 1
+    # add all the vertices with indegree 0 to the queue
+    q = collections.deque()
+    for i in range(n):
+        if indegree[i] == 0:
+            q.append(i)
+    
+    res = []
+    while q:
+        node = q.popleft()
+        res.append(node)
+        for neighbor in adjList[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                q.append(neighbor)
+    
+    if len(res) == n:
+        return False # there is no cycle
+    else:
+        return True # there is a cycle
+
+```
+
+### Course Schedule I - BFS - Topological sort - can also be done via DFS cycle detection algo
+```python
+def solution(n, prerequisites):
+    # create the adjList
+    indegree = [0] * n
+
+    # calculate the indegrees of all vertices
+    for i in range(n):
+        for neighbor in adjList[i]:
+            indegree[neighbor] += 1
+    # add all the vertices with indegree 0 to the queue
+    q = collections.deque()
+    for i in range(n):
+        if indegree[i] == 0:
+            q.append(i)
+    
+    res = []
+    while q:
+        node = q.popleft()
+        res.append(node)
+        for neighbor in adjList[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                q.append(neighbor)
+    
+    if len(res) == n:
+        return False # there is no cycle -> ordering of courses possible
+    else:
+        return True # there is a cycle -> impossible to do all courses
+
+```
+
+### Course Schedule II (ordering needed) - BFS - Topological sort only way!
+```python
+def solution(n, prerequisites):
+    # create the adjList
+    indegree = [0] * n
+
+    # calculate the indegrees of all vertices
+    for i in range(n):
+        for neighbor in adjList[i]:
+            indegree[neighbor] += 1
+    # add all the vertices with indegree 0 to the queue
+    q = collections.deque()
+    for i in range(n):
+        if indegree[i] == 0:
+            q.append(i)
+    
+    res = []
+    while q:
+        node = q.popleft()
+        res.append(node)
+        for neighbor in adjList[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                q.append(neighbor)
+    
+    if len(res) == n:
+        return res # there is no cycle -> ordering of courses possible
+    else:
+        return [] # there is a cycle -> impossible to do all courses
+
+```
+
+### Find eventual safe states - BFS - Topological sort 
+```python
+def solution(n, edges):
+    # create adjList while reversing the edges -> 
+    # indegree becomes outdegree and vice-versa
+    adjList = { i: [] for i in range(n) }
+    for a, b in edges:
+        adjList[b].append[a]
+    # do a BFS topoSort (kahn's algo)
+    ## create an array - indegree and fill it
+    indegree = [0] * n
+    for i in range(n):
+        for neighbor in adjList[i]:
+            indegee[i] += 1
+    ## do a BFS topo sort
+    q = collections.deque()
+    for i in range(n):
+        if indegree[i] == 0:
+            q.append(i)
+    
+    while q:
+        node = q.popleft()
+        res.append(node)
+        for neighbor in adjList[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                q.append(neighbor)
+    # res === all the safe nodes!
+    return res
+```
+
+### Alien Dictionary - Topological Sort (BFS)
+
+```python
+def solution(words, N, K):
+    '''
+        create Directed Graph (adjList) from the given words
+        Do a TopoSort
+        res = ordering = toposort
+    '''
+    adjList = {i: [] for i in range(K)}
+    for i in range(N - 1):
+        word1 = words[i]
+        word2 = words[i + 1]
+        length = min(len(word1), len(word2))
+        f = 0
+        for j in range(length):
+            if word1[j] != word2[j]:
+                adjList[ord(word1[j]) - ord('a')].append(ord(word2[j]) - ord['a'])
+                f = 1
+                break
+        if f == 0: # means we did not find any char diff
+            if len(word2) < len(word1):
+                return [] # ordering not possible, eg: w1 = abcd, w2 = abc
+    
+    # start of toposort algo:
+    # create and populate indegree array
+    indegree = [0] * K
+    for i in range(K):
+        for neighbor in adjList[i]:
+            indegree[neighbor] += 1
+        
+    # add nodes to the queue(with indegree == 0)
+    q = collections.deque()
+    for i in range(K):
+        if indegree[i] == 0:
+            q.append(i)
+    
+    # do the toposort
+    res = []
+    while q:
+        node = q.popleft()
+        res.append(node)
+        for neighbor in adjList[node]:
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                q.append(neighbor)
+    # means there is a cycle -> Alien letter ordering not possible!
+    if len(res) != K:
+        return []
+    else:
+        return res
+
+``` 
+
+### Shortest Path in DAG - Topological Sort (BFS)
+
 ```python
 
 ```
 
-### Detect cycle Directed Graph - Topological sort
+### Shortest Path in Undirected Weighted Graph - Topological Sort (BFS)
+
 ```python
 
 ```
 
-### Find eventual safe states - Topological sort
+### Word Ladder I
 ```python
 
 ```
 
+### Word Ladder II
+```python
+
+```
