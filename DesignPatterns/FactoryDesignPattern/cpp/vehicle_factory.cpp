@@ -1,4 +1,4 @@
-#include "vehicle_factory.hpp"
+#include "vehicle_factory.hpp" // includes car.hpp, bike.hpp, vehicle.hpp
 
 Vehicle * VehicleFactory::getVehicle(string vehicleType) {
     Vehicle *vehicle;

@@ -567,13 +567,57 @@ def solution(words, N, K):
 
 ``` 
 
-### Shortest Path in DAG - Topological Sort (BFS)
-
+### Shortest Path in Weighted DAG - Topological Sort (DFS)
+#### Note: we can use Topo Sort algo here because there are no cycles, otherwise we need to use advanced algos like Dijkstra's and Bellmanford's algos
 ```python
+def solution(n, m, edges):
+    '''
+        Create the adjList with pairs = <node, wt>
+        Do a topoSort-DFS as it uses stack and we need elements in stack pop order
+        Create a distance array with each value = inf
+        Update the source distance = 0
+        Update the distance array by popping elements from the stack in that order
+    '''
+    # Creation of adjList
+    adjList = { i:[] for i in range(n) }
+
+    for a, b, c in edges:
+        adjList[a].append([b, c])
+
+    # topoSort
+    stack = []
+    visited = set()
+
+    # O(n + m)
+    def topoSort(node):
+        visited.add(node)
+        for neighbor in adjList[node]:
+            if neighbor[0] not in visited:
+                topoSort(neighbor[0])
+        stack.append(node)
+
+    for i in range(n):
+        if i not in visited:
+            topoSort(i)
+    
+    # Distance calculations
+    distance = [float("inf")] * n
+    distance[0] = 0 # assumed source -> can be anything
+
+    # O(n + m)
+    while stack:
+        u = stack.pop()
+        for v, wt in adjList[u]: # relaxation of edges
+            if distance[u] + wt < distance[v]:
+                distance[v] = distance[u] + wt
+    
+    return distance
+
+
 
 ```
 
-### Shortest Path in Undirected Weighted Graph - Topological Sort (BFS)
+### Shortest Path in Undirected Weighted Graph with unit weights - Topological Sort (BFS)
 
 ```python
 
