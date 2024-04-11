@@ -137,12 +137,81 @@ Q. Find the count of all the subsequences when sum == k
             return k + l
         
         return backtrack(0, [], 0)
-        
+
 ```
 
+### General Backtracking pattern with loop
+Q. Find all permutations -> using extra space!
+```python
+# Solution with extra space: freq-counter to keep track of which elements are available -> O(n) extra space!
+# Overall Time = O(n! * n)
+def solution(nums):
+    N = len(nums)
 
+    res = []
+    freq = [0] * N
 
+    def backtrack(perm, freq):
+        # base case
+        if len(perm) == N:
+            res.append(perm.copy())
+            return
+        
+        for i in range(N):
+            if freq[i] == 0:
+                freq[i] = 1
+                perm.append(nums[i])
+                backtrack(perm, freq)
+                freq[i] = 0
+                perm.pop()
 
+    backtrack([], freq)
+    return res
 
+```
 
+#### Backtracking Swapping technique
+Q. Find all permutations -> without using extra space!
+
+```python
+# Solution without extra space -> The swapping technique! -> Another pattern
+def solution(nums):
+    N = len(nums)
+    res = []
+
+    def swap(i, j, array):
+        array[i], array[j] = array[j], array[i]
+
+    def backtrack(idx, perm):
+        # base case
+        if idx == N:
+            res.append(perm.copy())
+
+        # general case loop
+        for i in range(idx, N): # for each idx from idx to N - 1
+            swap(idx, i, perm) # swap i with idx
+            backtrack(i + 1, perm)
+            swap(i, idx, perm) # swap back i with idx -> backtrack
+    
+    perm = nums.copy() # to not modify the original input array
+    backtrack(perm)
+    return res
+```
+
+### N - Queens
+```python
+
+```
+### Palindrome Partitioning
+```python
+
+```
+### Rat in a Maze
+```python
+
+```
+### kth permutation sequence
+```python
+
+```
 

@@ -56,7 +56,7 @@ def solution(vertices, connections):
     visited = set()
 
     def bfs(node):
-        q = collections.deque(0)
+        q = collections.deque()
         q.append(node)
         visited.add(node)
         while q:
@@ -72,7 +72,6 @@ def solution(vertices, connections):
     for node in range(vertices):
         if some_condition:
             if node not in visited:
-                visited.add(node)
                 bfs(node)
 
 
@@ -112,7 +111,10 @@ def solution(vertices, connections):
 
 # Some important code snippets:
 
-### Detect Cycle Undirected using BFS
+### Detect Cycle Undirected Graph using BFS
+Always keep track of the parent. <br>
+If during BFS, a node's neighbor is already visited:
+<br>If its a parent, then fine, otherwise it contains a cycle
 ```python
 def Solution(adjList):
     num_vertices = len(adjList)
@@ -141,7 +143,7 @@ def Solution(adjList):
     return False
 ```
 
-### Detect Cycle Undirected using DFS
+### Detect Cycle Undirected Graph using DFS
 ```python
 def Solution(adjList):
     num_vertices = len(adjList)
@@ -166,8 +168,8 @@ def Solution(adjList):
     return False
 ```
 
-### BFS Level by level (min steps, min time, parallely capture/convert cells)
-
+### Multisource BFS (min steps, min time, parallely capture/convert cells)
+Q-1. Distance of nearest Cell having 1 | 0/1 matrix
 ```python
 def solution(grid):
     ROWS, COLS = len(grid), len(grid[0])
@@ -200,6 +202,52 @@ def solution(grid):
                 q.append([row, col, steps + 1])
 
 
+```
+
+Q-2. Number of enclaves
+```python
+def solution(grid):
+    '''
+        * all cells at the boundaries with a 1 are added to the Queue and visited
+        * all cells connected to those cells are also added to the queue and visited
+        * in the end, the cells having 1s and not visited == Answer! -> count those and return
+    '''
+    class Solution:
+    def numEnclaves(self, grid: List[List[int]]) -> int:
+        ROWS, COLS = len(grid), len(grid[0])
+        visited = set()
+        q = collections.deque()
+
+        for r in range(ROWS):
+            for c in range(COLS):
+                if r in [0, ROWS - 1] or c in [0, COLS - 1]:
+                    if grid[r][c] == 1:
+                        visited.add((r, c))
+                        q.append([r, c])
+        
+        while q:
+            row, col = q.popleft()
+            # visit the neighbors and update if required
+            neighbors = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+            for nr, nc in neighbors:
+                r = row + nr
+                c = col + nc
+                if (r >= 0 and r < ROWS and 
+                    c >= 0 and c < COLS and 
+                    (r, c) not in visited and 
+                    grid[r][c] == 1):
+                    
+                    q.append([r, c])
+                    visited.add((r, c))
+        
+        cnt = 0
+        for r in range(ROWS):
+            for c in range(COLS):
+                if grid[r][c] == 1 and (r, c) not in visited:
+                    cnt += 1
+        return cnt
+
+    
 ```
 
 ### Graph Coloring: Check if graph is bipartite ( 2 colorable ) - BFS
