@@ -115,6 +115,7 @@ def solution(vertices, connections):
 Always keep track of the parent. <br>
 If during BFS, a node's neighbor is already visited:
 <br>If its a parent, then fine, otherwise it contains a cycle
+
 ```python
 def Solution(adjList):
     num_vertices = len(adjList)
@@ -168,8 +169,8 @@ def Solution(adjList):
     return False
 ```
 
-### Multisource BFS (min steps, min time, parallely capture/convert cells)
-Q-1. Distance of nearest Cell having 1 | 0/1 matrix
+### Multisource BFS General structure (min steps, min time, parallely capture/convert cells)
+
 ```python
 def solution(grid):
     ROWS, COLS = len(grid), len(grid[0])
@@ -200,6 +201,39 @@ def solution(grid):
             else:
                 visited.add((row, col))
                 q.append([row, col, steps + 1])
+
+
+```
+
+Q-1. Distance of nearest Cell having 1(gfg) | 0/1 matrix(leetcode)
+```python
+class Solution:
+    def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        ROWS, COLS = len(mat), len(mat[0])
+        distance = [[float("inf")] * COLS for r in range(ROWS)]
+        q = collections.deque()
+        visited = set()
+
+        for r in range(ROWS):
+            for c in range(COLS):
+                if mat[r][c] == 0:
+                    q.append([r, c, 0])
+                    visited.add((r, c))
+
+        while q:
+            # get the node with distance
+            row, col, dist = q.popleft()
+            # update the distance matrix
+            distance[row][col] = dist
+            # traverse the neighbors
+            neighbors = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+            for nr, nc in neighbors:
+                r = row + nr
+                c = col + nc
+                if r in range(ROWS) and c in range(COLS) and (r, c) not in visited:
+                    q.append([r, c, dist + 1])
+                    visited.add((r, c))
+        return distance
 
 
 ```
@@ -236,7 +270,7 @@ def solution(grid):
                     c >= 0 and c < COLS and 
                     (r, c) not in visited and 
                     grid[r][c] == 1):
-                    
+
                     q.append([r, c])
                     visited.add((r, c))
         
@@ -250,23 +284,54 @@ def solution(grid):
     
 ```
 
+### Number of distinct islands | 2D DFS | 2D BFS | base coordinate trick!
+```python
+class Solution:
+    def numDistinctIslands(self, grid: List[List[int]]) -> int:
+        ROWS, COLS = len(grid), len(grid[0])
+
+        visited = set()
+
+        def dfs(r, c, coordinates, baser, basec):
+            visited.add((r, c))
+            coordinates.append(tuple([r - baser, c - basec]))
+
+            neighbors = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+            for nr, nc in neighbors:
+                row = r + nr
+                col = c + nc
+                if row in range(ROWS) and col in range(COLS) and (row, col) not in visited and grid[row][col] == 1:
+                    dfs(row, col, coordinates, baser, basec)
+        
+        islandSet = set()
+
+        for r in range(ROWS):
+            for c in range(COLS):
+                if (r, c) not in visited and grid[r][c] == 1:
+                    islandRep = []
+                    dfs(r, c, islandRep, r, c)
+                    islandSet.add(tuple(islandRep))
+        return len(islandSet)
+```
+
 ### Graph Coloring: Check if graph is bipartite ( 2 colorable ) - BFS
 
 ```python
 def solution(n, edges):
     # create the adj list
     # visited set not required in this case!
-    color = [-1] * n # we have color array instead!
+    # allowed 2 colors assumed: 0 and 1
+    color = [-1] * n # we have color array instead! and initially all the nodes have no color ie. -1
 
     def isBipartiteBFS(start):
         q = deque()
         q.append(start)
-        color[start] = 0
+        color[start] = 0 # by default we start by coloring the starting node with a 0
 
         while q:
             node = q.popleft()
             for neighbor in adjList[node]:
-                # if the neighbor is not colored
+                # if the neighbor is not colored, color it with opposite of my color
                 if color[neighbor] == -1:
                     color[neighbor] = not color[node]
                     q.append(neighbor)
@@ -278,7 +343,7 @@ def solution(n, edges):
 
     for i in range(n):
         if color[i] == -1:
-            if isBipartiteDFS(i) == False:
+            if isBipartiteBFS(i) == False:
                 return False
     return True
 
@@ -367,7 +432,7 @@ def solution(n, edges):
             else:
                 if neighbor in pathVisited:
                     return True
-        res.append(node)
+        res.append(node) # if we are here, we are sure that the node is neither part of the cycle nor it leads to one
         pathVisited.remove(node)
         return False
 
