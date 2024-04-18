@@ -1,6 +1,6 @@
 ## Patterns
 
-### Fixed / Constant Window
+### Type 1: Fixed / Constant Window
 <br>
 Q. Find the max Sum possible in a window of size === k
 
@@ -20,7 +20,7 @@ def solution(nums, k):
     return maxSum
 ```
 
-### Longest Subarray / Substring where "some condition"
+### Type 2: Longest Subarray / Substring where "some condition"
 
 Q. Find the longest subarray "sum <= k"
 
@@ -87,20 +87,36 @@ def solution(nums, k):
 
 ```
 
-### Count Number of subarrays "some condition" - HARD - solved using pattern 2 only
+### Type 3: Count Number of subarrays "some condition" - HARD - solved using pattern 2 only
 Q. Number of subarrays with "sum == k" -> tough to determine whether to expand or shrink
-<br> Solution: [Number of subarrays "sum <= k"] - [number of subarrays "sum <= k - 1"]
 
 ```python
-
+Solution: [Number of subarrays "sum <= k"] - [number of subarrays "sum <= k - 1"]
 ```
 
-### Finding the shortest / Minimum window "some condition" -> RARE
-Q. Shortest window that contains all distinct chars
+### Type 4: Finding the shortest / Minimum window "some condition" -> RARE
+Q. Shortest window that contains k distinct chars
 <br> str: "aabbccabc"
 
 ```python
 def solution(nums, k):
+    n = len(nums)
+    hashSet = set()
+    l, r = 0, 0
+    shortestLen = float("inf")
+    while r < n:
+        
+        hashSet.add(nums[r])
+        
+        while len(hashSet) < k:
+            hashSet.remove(nums[l])
+            l += 1
+        if len(hashSet) == k:
+            shortestLen = min(shortestLen, r - l + 1)
+        
+        r += 1
+
+    return shortestLen
 
 ```
 
@@ -109,40 +125,40 @@ def solution(nums, k):
 ### Q - 1 | Maximum points you can obtain from cards | EASY
 
 ```python
-def solution(nums, k):
-    '''
-    [6 2  3   4  7 2 1 7 1] , k = 4
-     0 1  2   3  4 5 6 7 8
-         k-2 k-1 k      
-    '''
-    lsum
-    for i in range(k):
-        lsum += nums[i]
-    
-    maxSum = lsum
-    rsum = 0
-    rptr = len(nums) - 1
-    for i in range(k - 1, -1, -1):
-        lsum -= nums[i]
-        rsum += nums[rptr]
-        rptr -= 1
-        maxSum = max(maxSum, lsum + rsum)
+class Solution:
+    def maxScore(self, cardPoints: List[int], k: int) -> int:
+        n = len(cardPoints)
+        lsum, rsum = 0, 0
+        
+        for i in range(k):
+            lsum += cardPoints[i]
 
-    return maxSum
+        maxSum = lsum
+        
+        j = n - 1
+
+        for i in range(k - 1, -1, -1):
+            lsum -= cardPoints[i]
+            rsum += cardPoints[j]
+            j -= 1
+            maxSum = max(maxSum, lsum + rsum)
+        
+        return maxSum
+
 ```
 
 ### Q - 2 | Longest Substring without repeating characters | MEDIUM
 ```python
 # Brute force: Generate all possible substrings and keep on checking
-# Time: O(n**2)
+# Time: O(n**2), space = O(n)
 def solution(s):
     
     n = len(s)
     maxLen = 0
 
-    for l in range(n): # O(n)
+    for l in range(n): # O(n) -> 0 to n - 1
         hashArray = [0] * 256
-        for r in range(l, n): # O(n)
+        for r in range(l, n): # O(n) -> l to n - 1
             if hashArray[s[r]] == 1:
                 break
             maxLen = max(maxLen, r - l + 1)
@@ -195,7 +211,7 @@ def solution(s):
 ```
 
 
-### Q - 3 | Maximum consecutive 1s "allowed to flip atmost k 0s to 1s" | HARD
+### Q - 3 | Maximum consecutive 1s III -> "allowed to flip atmost k 0s to 1s" | HARD
 ```python
 
 '''
@@ -274,17 +290,262 @@ def solution(nums, k):
 
 ```
 
-### Q - 4 |
+### Q - 4 | Fruit into Baskets
 ```python
+class Solution:
+    # method 1: Brute force: generate all subarrays and check if distinct fruits are only 2 types
+    def totalFruit(self, fruits: List[int]) -> int:
+        n = len(fruits)
+        maxFruits = 0
+        for l in range(n):
+            hashMap = defaultdict(int)
+            for r in range(l, n):
+                hashMap[fruits[r]] += 1
+                if len(hashMap) > 2:
+                    break
+                
+                maxFruits = max(maxFruits, r - l + 1)
+
+        return maxFruits
+
+    # method 2: SL + TP + keep track of distinct fruits and their frequencies
+    def totalFruit(self, fruits: List[int]) -> int:
+        
+        n = len(fruits)
+        l, r = 0, 0
+        maxFruits = 0
+        hashMap = {}
+
+        while r < n:
+            hashMap[fruits[r]] = 1 + hashMap.get(fruits[r], 0)
+
+            while len(hashMap) > 2:
+                hashMap[fruits[l]] -= 1
+                if hashMap[fruits[l]] == 0:
+                    del hashMap[fruits[l]]
+                l += 1
+            
+            if len(hashMap) <= 2:
+                maxFruits = max(maxFruits, r - l + 1)
+            
+            r += 1
+        
+        return maxFruits
+
+
+    # method 3: Same as method 2 but optimized for 1 pass only
+    def totalFruit(self, fruits: List[int]) -> int:
+        
+        n = len(fruits)
+        l, r = 0, 0
+        maxFruits = 0
+        hashMap = {}
+
+        while r < n:
+            hashMap[fruits[r]] = 1 + hashMap.get(fruits[r], 0)
+
+            if len(hashMap) > 2:
+                hashMap[fruits[l]] -= 1
+                if hashMap[fruits[l]] == 0:
+                    del hashMap[fruits[l]]
+                l += 1
+            
+            if len(hashMap) <= 2:
+                maxFruits = max(maxFruits, r - l + 1)
+            
+            r += 1
+        
+        return maxFruits
+        
+```
+
+### Q - 5 | Longest Substring with atmost k distinct characters
+```python
+class Solution:
+    # method 1: brute force: Generate all substrings and keep track of distinct chars via hashset
+    def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
+        
+        n = len(s)
+        maxLen = 0
+
+        for l in range(n):
+            hashSet = set()
+            for r in range(l, n):
+                hashSet.add(s[r])
+                if len(hashSet) > k:
+                    break
+                
+                maxLen = max(maxLen, r - l + 1)
+
+        return maxLen
+
+    # method 2: sl + tp + hashMap to keep track of distinct chars and their frequencies
+    def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
+        n = len(s)
+        l, r = 0, 0
+        maxLen = 0
+        hashMap = {}
+
+        while r < n:
+
+            hashMap[s[r]] = 1 + hashMap.get(s[r], 0)
+            
+            while len(hashMap) > k:
+                hashMap[s[l]] -= 1
+                if hashMap[s[l]] == 0:
+                    del hashMap[s[l]]
+                l += 1
+            
+            if len(hashMap) <= k:
+                maxLen = max(maxLen, r - l + 1)
+
+            r += 1
+
+        return maxLen
+
+    # method 3: same as above but optimized
+    def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
+        n = len(s)
+        l, r = 0, 0
+        maxLen = 0
+        hashMap = {}
+
+        while r < n:
+            hashMap[s[r]] = 1 + hashMap.get(s[r], 0)
+            if len(hashMap) > k:
+                hashMap[s[l]] -= 1
+                if hashMap[s[l]] == 0:
+                    del hashMap[s[l]]
+                l += 1
+            
+            if len(hashMap) <= k:
+                maxLen = max(maxLen, r - l + 1)
+            
+            r += 1
+        
+        return maxLen
+```
+
+### Q - 6 | Number of substrings containing all 3 characters
+```python
+class Solution:
+    # Method 1: Brute force: Based on windows starting at index l -> left to right + Gen. all substrings
+    # time: O(n**2), space: O(3) = O(1)
+    def numberOfSubstrings(self, s: str) -> int:
+        n = len(s)
+        cnt = 0
+        for l in range(n):
+            hasSeen = [0] * 3 # stores the truthy values, ie. whether this char has been seen or not yet
+            for r in range(l, n):
+                # update the mapping data
+                hasSeen[ord(s[r]) - ord('a')] = 1
+                # check validity of the window
+                if hasSeen[0] + hasSeen[1] + hasSeen[2] == 3:
+                    # cnt = cnt + 1
+                    cnt = cnt + (n - r)
+                    break
+        return cnt
+
+
+    # Method 2: Better(SW + TP): Based on windows ending at index r -> left to right
+    # time: O(n), space: O(1)
+    def numberOfSubstrings(self, s: str) -> int:
+        
+        n = len(s)
+        lastSeen = [-1] * 3 # to store the index where that particular char was last seen
+        cnt = 0
+
+        for i in range(n):
+            lastSeen[ord(s[i]) - ord('a')] = i
+            if lastSeen[0] != -1 and lastSeen[1] != -1 and lastSeen[2] != -1: # valid window
+                cnt = cnt + (1 + min(lastSeen[0], lastSeen[1], lastSeen[2]))
+
+        return cnt
 
 ```
 
-### Q - 5 |
-```python
+### Q - 7 | Longest Repeating Character Replacement - (MEDIUM - HARD)
 
+```python
+class Solution:
+    # method 1: brute force: generate all substrings + formula: {valid window length - maxFreq <= k}
+    # time: O(n**2), space: O(26) == O(1)
+    def characterReplacement(self, s: str, k: int) -> int:
+        
+        n = len(s)
+        maxLen = 0
+
+        for l in range(n):
+            hashArray = [0] * 26
+            maxFreq = 0
+            for r in range(l, n):
+                # update the map and maxFreq
+                hashArray[ord(s[r]) - ord('A')] += 1
+                maxFreq = max(maxFreq, hashArray[ord(s[r]) - ord('A')])
+
+                # check for validity of the window
+                if (r - l + 1) - maxFreq <= k:
+                    maxLen = max(maxLen, r - l + 1)
+                else:
+                    break
+        return maxLen        
+                
+    
+    # method 2: Better: (SW + TP + Formula)
+    # time: O(n**2) in worst case, space: O(n)
+    def characterReplacement(self, s: str, k: int) -> int:
+
+        n = len(s)
+        l, r = 0, 0
+        hashMap = {}
+        maxLen = 0
+        maxFreq = 0
+
+        for r in range(n): # O(n)
+            # update the map and maxFreq
+            hashMap[ord(s[r]) - ord('A')] = 1 + hashMap.get(ord(s[r]) - ord('A'), 0)
+            maxFreq = max(maxFreq, hashMap[ord(s[r]) - ord('A')])
+
+            # make the window valid by shrinking
+            while (r - l + 1) - maxFreq > k:
+                hashMap[ord(s[l]) - ord('A')] -= 1
+                tempMaxFreq = 0
+                for value in hashMap.values(): # O(n)
+                    tempMaxFreq = max(tempMaxFreq, value) 
+                maxFreq = tempMaxFreq
+                l += 1
+
+            # check for validity of window
+            if (r - l + 1) - maxFreq <= k:
+                maxLen = max(maxLen, r - l + 1)
+        
+        return maxLen
+
+    # method 3: Better: (SW + TP + Formula + ignoring to decrease maxFreq as it dosen't affect answer)
+    # time: O(n) in worst case, space: O(n)
+    def characterReplacement(self, s: str, k: int) -> int:
+
+        n = len(s)
+        l, r = 0, 0
+        hashMap = {}
+        maxLen = 0
+        maxFreq = 0
+
+        for r in range(n): # O(n)
+            # update the map and maxFreq
+            hashMap[ord(s[r]) - ord('A')] = 1 + hashMap.get(ord(s[r]) - ord('A'), 0)
+            maxFreq = max(maxFreq, hashMap[ord(s[r]) - ord('A')])
+
+            # make the window valid by shrinking -> ignore to decrease maxFreq -> dosen't affect ans
+            while (r - l + 1) - maxFreq > k:
+                hashMap[ord(s[l]) - ord('A')] -= 1
+                l += 1
+
+            # check for validity of window
+            if (r - l + 1) - maxFreq <= k:
+                maxLen = max(maxLen, r - l + 1)
+        
+        return maxLen
 ```
 
-### Q - 6 |
-```python
-
-```
+### Q - 8 | Binary Subarrays with sum
