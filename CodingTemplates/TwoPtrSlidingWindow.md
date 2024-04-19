@@ -548,4 +548,260 @@ class Solution:
         return maxLen
 ```
 
-### Q - 8 | Binary Subarrays with sum
+### NOTE: Checkout Q-4 and Q-17 of Arrays.md first
+### Q - 8 | Binary Subarrays with sum 
+
+```python
+class Solution:
+    # METHOD 1: BRUTE FORCE: GEN ALL SUBARRAYS + running Sum
+    def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
+        cnt = 0
+        n = len(nums)
+
+        for l in range(n):
+            runningSum = 0
+            for r in range(l, n):
+                runningSum += nums[r]
+                if runningSum == goal:
+                    cnt += 1
+                if runningSum > goal:
+                    break
+        return cnt
+
+
+    # method 2: better: presum + hashmap -> we can optimize this further as there are no -ve nos
+    # time: O(n), space: O(n)
+    def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
+        n = len(nums)
+        runningSum = 0
+        hashMap = {0: 1}
+        cnt = 0
+
+        for i in range(n):
+            runningSum += nums[i]
+
+            rem = runningSum - goal
+            if rem in hashMap:
+                cnt += hashMap[rem]
+            
+            hashMap[runningSum] = 1 + hashMap.get(runningSum, 0)
+
+        return cnt
+
+
+    # method 3: optimal: sw + tp -> as there are no -ve nos
+    # time: O(2 * 2 *n) = O(n) but slower than method 2, space: O(1)
+    def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
+        
+        n = len(nums)
+        
+        def numSubarraysSumLessThan(k):
+            cnt = 0
+            l, r = 0, 0
+            runningSum = 0
+            while r < n:
+                runningSum += nums[r]
+                while l <= r and runningSum > k:
+                    runningSum -= nums[l]
+                    l += 1
+                
+                if runningSum <= k:
+                    cnt += (r - l + 1)
+                
+                r += 1
+            
+            return cnt
+
+        return numSubarraysSumLessThan(goal) - numSubarraysSumLessThan(goal - 1)
+
+```
+### Q - 9 | 1248. Count Number of Nice Subarrays -> same question as above but just twisted a bit
+
+```python
+class Solution:
+    # METHOD 1: BRUTE FORCE: GEN ALL SUBARRAYS + running Sum
+    def numberOfSubarrays(self, nums: List[int], k: int) -> int:
+        cnt = 0
+        n = len(nums)
+
+        for l in range(n):
+            runningSum = 0
+            for r in range(l, n):
+                runningSum += nums[r] % 2
+                if runningSum == k:
+                    cnt += 1
+                if runningSum > k:
+                    break
+        return cnt
+
+    # method 2: better: presum + hashmap -> we can optimize this further as there are no -ve nos
+    # time: O(n), space: O(n)
+    def numberOfSubarrays(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        runningSum = 0
+        hashMap = {0: 1}
+        cnt = 0
+
+        for i in range(n):
+            runningSum += nums[i] % 2
+
+            rem = runningSum - k
+            if rem in hashMap:
+                cnt += hashMap[rem]
+            
+            hashMap[runningSum] = 1 + hashMap.get(runningSum, 0)
+
+        return cnt
+
+    # method 3: optimal: sw + tp -> as there are no -ve nos
+    # time: O(2 * 2 *n) = O(n) but slower than method 2, space: O(1)
+    def numberOfSubarrays(self, nums: List[int], k: int) -> int:
+        
+        n = len(nums)
+        
+        def numSubarraysSumLessThan(k):
+            cnt = 0
+            l, r = 0, 0
+            runningSum = 0
+            while r < n:
+                runningSum += nums[r] % 2
+                while l <= r and runningSum > k:
+                    runningSum -= nums[l] % 2
+                    l += 1
+                
+                if runningSum <= k:
+                    cnt += (r - l + 1)
+                
+                r += 1
+            
+            return cnt
+
+        return numSubarraysSumLessThan(k) - numSubarraysSumLessThan(k - 1)
+
+```
+
+### Q - 10 | 992. Subarrays with K Different Integers
+```python 
+class Solution:
+    # method 1: brute force: gen. all subarrays + hashMap to keep track of freq of each element
+    def subarraysWithKDistinct(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        cnt = 0
+
+        for l in range(n):
+            
+            hashMap = {}
+
+            for r in range(l, n):
+                # update the hashmap
+                hashMap[nums[r]] = 1 + hashMap.get(nums[r], 0)
+                
+                if len(hashMap) == k:
+                    cnt += 1
+
+                if len(hashMap) > k:
+                    break
+
+        return cnt        
+
+    # method 2: better & optimal: sw + tp + hashMap as above + ((<= k) - (<= (k - 1))) = k trick
+    def subarraysWithKDistinct(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+
+        def helper(K):
+            cnt = 0
+            l, r = 0, 0
+            hashMap = {}
+
+            while r < n:
+                hashMap[nums[r]] = 1 + hashMap.get(nums[r], 0)
+
+                while len(hashMap) > K:
+                    hashMap[nums[l]] -= 1
+                    if hashMap[nums[l]] == 0:
+                        del hashMap[nums[l]]
+                    l += 1
+
+                if len(hashMap) <= K:
+                    cnt += (r - l + 1)
+                
+                r += 1
+
+            return cnt
+
+        return helper(k) - helper(k - 1)
+```
+
+### Q - 11 | 76. Minimum Window Substring
+```python 
+class Solution:
+    # method 1: Brute force: generate all substrings + 1 hashArray of size 256 only
+    # time: O(n**2), space: O(n)
+    def minWindow(self, s: str, t: str) -> str:
+        n = len(s)
+        m = len(t)
+        sIndex = -1
+        minLen = float("inf")
+
+        for l in range(n):
+            cnt = 0
+            hashArray = [0] * 256
+            for i in range(m):
+                hashArray[ord(t[i]) - ord('A')] += 1
+            for r in range(l, n):
+                if hashArray[ord(s[r]) - ord('A')] > 0:
+                    cnt += 1
+                hashArray[ord(s[r]) - ord('A')] -= 1
+
+                if cnt == m:
+                    if (r - l + 1) < minLen:
+                        minLen = r - l + 1
+                        sIndex = l
+                        break
+        print(sIndex, minLen)
+        return s[sIndex:sIndex+minLen] if sIndex != -1 else ""
+
+
+
+
+    # method 2: Better & optimal: SW + TP + 2 hashMaps + smart way to figure out valid window condition
+    # time: O(n) 
+    def minWindow(self, s: str, t: str) -> str:
+        n = len(s)
+        m = len(t)
+        hashArray = [0] * 256
+        cnt = 0
+        sIndex = -1
+        minLen = float("inf")
+
+        for i in range(m):
+            hashArray[ord(t[i]) - ord('A')] += 1
+        
+        l, r = 0, 0
+
+        while r < n:
+            # check if there was a previous entry for this char
+            if hashArray[ord(s[r]) - ord('A')] > 0:
+                cnt += 1
+            
+            # decrease the frequency of this char
+            hashArray[ord(s[r]) - ord('A')] -= 1
+
+            # until window is valid, keep on calculating minLen and sIndex and updating the hashArray
+            while l <= r and cnt == m:
+                if (r - l + 1) < minLen:
+                    minLen = r - l + 1
+                    sIndex = l
+                # shrink window for search of a shorter one -> add to the char's freq
+                if hashArray[ord(s[l]) - ord('A')] == 0:
+                    cnt -= 1
+                hashArray[ord(s[l]) - ord('A')] += 1
+                l += 1
+            
+            r += 1
+        print(sIndex, minLen)
+        return s[sIndex:sIndex+minLen] if sIndex != -1 else ""
+
+
+
+```
