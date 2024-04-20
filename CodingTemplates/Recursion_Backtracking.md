@@ -26,7 +26,7 @@ def solution(nums):
 
 ```
 
-### Print all Subsequences
+### Q. Print all Subsequences
 What's a subsequence? <br> A sequence ( can be contiguous or non-contiguous ) which follows the original ordering of elements
 
 #### Diagram for Vertical recursion: (later)
@@ -49,6 +49,8 @@ def solution():
         # not take condition
         subseq.pop()
         backtrack(i + 1, subseq)
+    
+    backtrack(0, [])
 
 ```
 

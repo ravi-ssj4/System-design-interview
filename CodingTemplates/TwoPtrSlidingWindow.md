@@ -780,21 +780,22 @@ class Solution:
         l, r = 0, 0
 
         while r < n:
-            # check if there was a previous entry for this char
+            # check if there was a previous entry for this char entered by string 't'
             if hashArray[ord(s[r]) - ord('A')] > 0:
                 cnt += 1
             
             # decrease the frequency of this char
             hashArray[ord(s[r]) - ord('A')] -= 1
 
-            # until window is valid, keep on calculating minLen and sIndex and updating the hashArray
+            # keep on trying to shrink the window until its is valid for smaller window 
+            # -> keep on calculating minLen and sIndex and updating the hashArray
             while l <= r and cnt == m:
                 if (r - l + 1) < minLen:
                     minLen = r - l + 1
                     sIndex = l
-                # shrink window for search of a shorter one -> add to the char's freq
-                if hashArray[ord(s[l]) - ord('A')] == 0:
+                if hashArray[ord(s[l]) - ord('A')] == 0: # this means the window is loosing this char inside it -> reinsertion in the common hashArray
                     cnt -= 1
+                # shrink window for search of a shorter one -> add to the char's freq
                 hashArray[ord(s[l]) - ord('A')] += 1
                 l += 1
             
