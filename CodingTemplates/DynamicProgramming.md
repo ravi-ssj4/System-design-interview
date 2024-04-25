@@ -106,6 +106,117 @@ def frogJump(n: int, heights: List[int]) -> int:
 
 ```
 
+### Maximum sum of non-adjacent elements | House Robber 1
+```python
+# Simple recursion
+def maximumNonAdjacentSum(nums):    
+    
+    def dfs(i):
+        if i == 0:
+            return nums[i]
+        if i < 0:
+            return 0
+
+        # pick and not pick
+        pick = nums[i] + dfs(i - 2)
+        notPick = 0 + dfs(i - 1)
+    
+        return max(pick, notPick)
+
+    return dfs(len(nums) - 1)
+
+# Memoization
+def maximumNonAdjacentSum(nums):    
+    
+    def dfs(i):
+        if i == 0:
+            return nums[i]
+        if i < 0:
+            return 0
+        
+        if dp[i] != -1:
+            return dp[i]
+
+        # pick and not pick
+        pick = nums[i] + dfs(i - 2)
+        notPick = 0 + dfs(i - 1)
+
+        dp[i] = max(pick, notPick)
+        
+        return dp[i]
+
+    n = len(nums)
+    dp = [-1] * n
+    return dfs(n - 1)
+
+# Tabulation
+def maximumNonAdjacentSum(nums):    
+
+    n = len(nums)
+    dp = [0] * n
+    dp[0] = nums[0]
+
+    for i in range(1, n):
+        pick = nums[i] + dp[i - 2]
+        notPick = 0 + dp[i - 1]
+
+        dp[i] = max(dp[i], max(pick, notPick))
+
+
+    return dp[n - 1]
+
+# Tabulation: space optimized
+def maximumNonAdjacentSum(nums):    
+
+    n = len(nums)
+    # dp = [0] * n
+    prev1 = nums[0]
+    prev2 = 0
+
+    curi = 0
+    for i in range(1, n):
+        pick = nums[i]
+        if i > 1:
+            pick += prev2
+        notPick = 0 + prev1
+
+        curi = max(curi, max(pick, notPick))
+        prev2 = prev1
+        prev1 = curi
+
+
+    return prev1
+
+```
+
+### House Robber 2
+```python
+def houseRobber(valueInHouse):
+    
+    def houseRobber1(nums):
+        n = len(nums)
+        prev1 = nums[0]
+        prev2 = 0
+        curi = 0
+        for i in range(1, n):
+            pick = nums[i]
+            if i > 1:
+                pick += prev2
+            notPick = 0 + prev1
+            curi = max(curi, max(pick, notPick))
+            prev2 = prev1
+            prev1 = curi
+        return prev1
+
+    n = len(valueInHouse)
+    if n == 0:
+        return 0
+    if n == 1:
+        return valueInHouse[0]
+
+    return max(houseRobber1(valueInHouse[1:]), houseRobber1(valueInHouse[:-1]))
+```
+
 ### Ninja's Training
 
 ```python
@@ -218,6 +329,93 @@ def ninjaTraining(n: int, points: List[List[int]]) -> int:
 
     return dp[3]
 
+```
+
+### DP on GRIDS
+
+### DP8 - Grid unique paths
+
+```python 
+from collections import *
+from math import *
+
+def uniquePaths(m, n):
+	def f(i, j):
+		if i < 0 or j < 0:
+			return 0
+		if i == 0 and j == 0:
+			return 1
+		
+		up = f(i - 1, j)
+		left = f(i, j - 1)
+
+		return up + left
+
+	return f(m - 1, n - 1)
+
+def uniquePaths(m, n):
+	def f(i, j):
+		if i < 0 or j < 0:
+			return 0
+		if i == 0 and j == 0:
+			return 1
+		if dp[i][j] != -1:
+			return dp[i][j]
+
+		up = f(i - 1, j)
+		left = f(i, j - 1)
+
+		dp[i][j] = up + left
+		
+		return dp[i][j]
+
+	dp = [[-1] * n for i in range(m)]
+
+	return f(m - 1, n - 1)
+
+def uniquePaths(m, n):
+
+	dp = [[0] * n for _ in range(m)]
+
+	for i in range(m):
+		for j in range(n):
+			
+			if i == 0 and j == 0:
+				dp[i][j] = 1
+			else:
+				up, left = 0, 0
+				
+				if i > 0:
+					up = dp[i - 1][j]
+				if j > 0:
+					left = dp[i][j - 1]
+				
+				dp[i][j] = up + left
+
+	return dp[m - 1][n - 1]
+
+def uniquePaths(m, n):
+
+	prev = [0] * n
+
+	for i in range(m):
+		cur = [0] * n
+		for j in range(n):
+			
+			if i == 0 and j == 0:
+				cur[j] = 1
+			else:
+				up, left = 0, 0
+				
+				if i > 0:
+					up = prev[j]
+				if j > 0:
+					left = cur[j - 1]
+				
+				cur[j] = up + left
+		prev = cur.copy()
+
+	return prev[n - 1]
 
 
 

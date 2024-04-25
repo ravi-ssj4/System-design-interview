@@ -17,7 +17,10 @@ def solution(vertices, edges):
                 continue
             else:
                 dfs(neighbor)
-    dfs(0)
+    
+    for i in range(vertices):
+        if i not in visited:
+            dfs(i)
 ```
 
 ### DFS - 2D
@@ -27,20 +30,24 @@ def solution(graph):
     ROWS, COLS = len(graph), len(graph[0])
     visited = set()
 
-    def dfs(r, c):
-        if (r not in range(ROWS) or
-            c not in range(COLS) or
-            (r, c) in visited):
-            return
-        
-        visited.add((r, c))
-        # process (r, c) + other things
-        dfs(r + 1, c)
-        dfs(r - 1, c)
-        dfs(r, c + 1)
-        dfs(r, c - 1)
-    
-    dfs(0, 0)
+    def dfs(row, col):
+        visited.add((row, col)) # we always visit right at the start of the dfs function
+        # process node(row, col)
+        neighbors = [[0, -1], [0, 1], [-1, 0], [1, 0]]
+        for nr, nc in neighbors:
+            r = row + nr
+            c = col + nc
+            if (r in range(ROWS) or
+                c in range(COLS) or
+                (r, c) not in visited):
+                
+                dfs(r, c)
+            
+    # to take care of multiple connected components
+    for r in range(ROWS):
+        for c in range(COLS):
+        if (r, c) not in visited:
+            dfs(r, c)
 
 ```
 
@@ -56,16 +63,18 @@ def solution(vertices, connections):
     visited = set()
 
     def bfs(node):
+        
         q = collections.deque()
+        visited.add(node) # we always visit before adding to the queue
         q.append(node)
-        visited.add(node)
+        
         while q:
             node = q.popleft()
+            
             # process node + other things
+            
             for neighbor in adjList[node]:
-                if neighbor in visited:
-                    continue
-                else:
+                if neighbor not in visited:
                     visited.add(neighbor)
                     q.append(neighbor)
 
@@ -85,31 +94,136 @@ def solution(vertices, connections):
         ROWS, COLS = len(graph), len(graph[0])
         visited = set()
 
-        def bfs(r, c):
+        def bfs(row, col):
             q = collections.deque()
-            q.append([r, c])
-            visited.add((r, c))
+            visited.add((row, col))
+            q.append([row, col])
+
             while q:
+
                 row, col = q.popleft()
-                # process (row, col) + other things
+                
+                # process node(row, col) + other things
+                
                 neighbors = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+
                 for nr, nc in neighbors:
-                    r, c = row + nr, col + nc
-                    if (r not in range(ROWS) or
-                        c not in range(COLS) or
-                        (r, c) in visited):
-                        continue
-                    visited.add((r, c))
-                    q.append([r, c])
+                    r = row + nr
+                    c = col + nc
+                    if (r in range(ROWS) or
+                        c in range(COLS) or
+                        (r, c) not in visited):
+
+                        visited.add((r, c))
+                        q.append([r, c])
         
         for r in range(ROWS):
             for c in range(COLS):
-                if some_condition:
+                if (r, c) not in visited:
                     bfs(r, c)
     
 ```
 
 # Some important code snippets:
+
+### Number of provinces | adj Matrix given instead of adj List | VVI
+
+```python
+class Solution:
+    def numProvinces(self, adj, V):
+        ROWS, COLS = len(adj), len(adj[0])
+        
+        provinces = 0
+        
+        visited = set()
+        
+        def dfs(node):
+            visited.add(node)
+            
+            for vertex, connection in enumerate(adj[node]):
+                if connection == 1:
+                    if vertex not in visited:
+                        dfs(vertex)
+        
+        for i in range(V):
+            if i not in visited:
+                dfs(i)
+                provinces += 1
+        
+        return provinces
+```
+
+### Number of islands
+
+```python
+def numIslands(self,grid):
+        ROWS, COLS = len(grid), len(grid[0])
+        
+        islands = 0
+        
+        visited = set()
+        
+        def dfs(row, col):
+            
+            visited.add((row, col))
+            
+            neighbors = [[-1, 0], [1, 0], [0, 1], [0, -1], [-1, 1], [1, -1], [-1, -1], [1, 1]]
+            
+            for nr, nc in neighbors:
+                r = row + nr
+                c = col + nc
+                if (r in range(ROWS) and
+                    c in range(COLS) and
+                    (r, c) not in visited and
+                    grid[r][c] == 1):
+                    
+                    dfs(r, c)
+            
+        
+        for r in range(ROWS):
+            for c in range(COLS):
+                if (r, c) not in visited and grid[r][c] == 1:
+                    dfs(r, c)
+                    islands += 1
+                    
+        return islands
+```
+
+### Flood Fill Algorithm
+
+```python
+class Solution:
+	def floodFill(self, image, sr, sc, newColor):
+	    ROWS, COLS = len(image), len(image[0])
+	    
+	    answer = [[0] * COLS for _ in range(ROWS)]
+	    
+	    for r in range(ROWS):
+	        for c in range(COLS):
+	            answer[r][c] = image[r][c]
+	    
+	    startingPixelColor = image[sr][sc]
+	    
+	    def dfs(row, col):
+	        answer[row][col] = newColor
+		    
+		    neighbors = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+		    
+		    for nr, nc in neighbors:
+		        r = row + nr
+		        c = col + nc
+		        
+		        if (r in range(ROWS) and
+		            c in range(COLS) and
+		            answer[r][c] != newColor and
+		            image[r][c] == startingPixelColor):
+		            
+		            dfs(r, c)
+		
+		dfs(sr, sc)
+		
+		return answer
+```
 
 ### Detect Cycle Undirected Graph using BFS
 Always keep track of the parent. <br>
