@@ -225,6 +225,58 @@ class Solution:
 		return answer
 ```
 
+### Rotting Oranges
+
+```python
+def orangesRotting(self, grid):
+		ROWS, COLS = len(grid), len(grid[0])
+		
+		visited = set()
+		
+		q = collections.deque()
+		fresh = 0
+		
+		for r in range(ROWS):
+		    for c in range(COLS):
+		        if (r, c) not in visited:
+		            if grid[r][c] == 2:
+		                q.append((r, c))
+		                visited.add((r, c))
+		          
+		            if grid[r][c] == 1:
+		                fresh += 1
+	    
+	    time = 0
+	    while q:
+	        n = len(q)
+	        for _ in range(n):
+	            
+	            row, col = q.popleft()
+	            
+	            neighbors = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+	            
+	            for drow, dcol in neighbors:
+	                r = row + drow
+	                c = col + dcol
+	                
+	                if (r in range(ROWS) and
+	                    c in range(COLS) and
+	                    (r, c) not in visited and
+	                    grid[r][c] == 1):
+	                   
+	                   visited.add((r, c))
+	                   q.append((r, c))
+	                   grid[r][c] = 2
+	                   fresh -= 1
+	        if q:
+	            time += 1
+	   
+	    if fresh == 0:
+	        return time
+	    else:
+	        return -1
+```
+
 ### Detect Cycle Undirected Graph using BFS
 Always keep track of the parent. <br>
 If during BFS, a node's neighbor is already visited:
@@ -322,15 +374,27 @@ def solution(grid):
 Q-1. Distance of nearest Cell having 1(gfg) | 0/1 matrix(leetcode)
 ```python
 class Solution:
-    def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
-        ROWS, COLS = len(mat), len(mat[0])
+    '''
+    * All cells having a value of 0 will have a distance of 0 from the nearest 0 -> push all such cells onto the queue with distance = 0
+    * do a bfs on the elements of the queue:
+        * pop [r, c, distance] from the queue and update distance[r][c] = dist
+        * iterate through the neighbors and if unvisited, push them also onto the queue with (distance = distance + 1)
+    * return the distance grid
+    '''
+    #Function to find distance of nearest 1 in the grid for each cell.
+	def nearest(self, grid):
+	    
+		ROWS, COLS = len(grid), len(grid[0])
+        
         distance = [[float("inf")] * COLS for r in range(ROWS)]
+        
         q = collections.deque()
+        
         visited = set()
 
         for r in range(ROWS):
             for c in range(COLS):
-                if mat[r][c] == 0:
+                if grid[r][c] == 1:
                     q.append([r, c, 0])
                     visited.add((r, c))
 
@@ -340,19 +404,67 @@ class Solution:
             # update the distance matrix
             distance[row][col] = dist
             # traverse the neighbors
-            neighbors = [[0, 1], [0, -1], [1, 0], [-1, 0]]
-            for nr, nc in neighbors:
-                r = row + nr
-                c = col + nc
-                if r in range(ROWS) and c in range(COLS) and (r, c) not in visited:
+            directions = [[0, 1], [0, -1], [1, 0], [-1, 0]]
+            for dr, dc in directions:
+                r = row + dr
+                c = col + dc
+                if (r >= 0 and r < ROWS and 
+                    c >= 0 and c < COLS and 
+                    (r, c) not in visited and
+                    grid[r][c] == 0):
+                    
                     q.append([r, c, dist + 1])
                     visited.add((r, c))
+                    
         return distance
 
 
 ```
 
-Q-2. Number of enclaves
+Q-2. Surrounded Regions
+
+```python
+class Solution:
+    def fill(self, n, m, grid):
+        ROWS, COLS = len(grid), len(grid[0])
+        visited = set()
+        
+        def dfs(r, c):
+            visited.add((r, c))
+            grid[r][c] = "T"
+            directions = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+            
+            for dr, dc in directions:
+                nr = r + dr
+                nc = c + dc
+                
+                if (nr in range(ROWS) and
+                    nc in range(COLS) and
+                    (nr, nc) not in visited and
+                    grid[nr][nc] == "O"):
+                    
+                    dfs(nr, nc)
+
+        for r in range(ROWS):
+            for c in range(COLS):
+                if (r in [0, ROWS - 1] or c in [0, COLS - 1]):
+                    if (r, c) not in visited and grid[r][c] == "O":
+                        dfs(r, c)
+                    
+        for r in range(ROWS):
+            for c in range(COLS):
+                if grid[r][c] == "O":
+                    grid[r][c] = "X"
+        
+        for r in range(ROWS):
+            for c in range(COLS):
+                if grid[r][c] == "T":
+                    grid[r][c] = "O"
+        
+        return grid
+```
+
+Q-3. Number of enclaves
 ```python
 def solution(grid):
     '''
@@ -395,6 +507,40 @@ def solution(grid):
                     cnt += 1
         return cnt
 
+# using DFS
+def numberOfEnclaves(self, grid: List[List[int]]) -> int:
+        ROWS, COLS = len(grid), len(grid[0])
+        visited = set()
+        
+        def dfs(r, c):
+            visited.add((r, c))
+            directions = [[-1, 0], [1, 0], [0, 1], [0, -1]]
+            
+            for dr, dc in directions:
+                nr = r + dr
+                nc = c + dc
+                
+                if (nr >= 0 and nr < ROWS and
+                    nc >= 0 and nc < COLS and
+                    (nr, nc) not in visited and
+                    grid[nr][nc] == 1):
+                    
+                    dfs(nr, nc)
+
+        for r in range(ROWS):
+            for c in range(COLS):
+                if (r in [0, ROWS - 1] or c in [0, COLS - 1]):
+                    if (r, c) not in visited and grid[r][c] == 1:
+                        dfs(r, c)
+                        
+        enclaves = 0
+        
+        for r in range(ROWS):
+            for c in range(COLS):
+                if grid[r][c] == 1 and (r, c) not in visited:
+                    enclaves += 1
+        
+        return enclaves
     
 ```
 
@@ -477,7 +623,8 @@ def solution(n, edges):
             # if the neighbor is not colored
             if color[neighbor] == -1:
                 # pass opp of current color for next call
-                isBipartiteDFS(neighbor, not newColor)
+                if isBipartiteDFS(neighbor, not newColor) == False:
+                    return False
             else: # if the neighbor is already colored beforehand
                 # if neighbor's color ==== my color: not a bipartite!
                 if color[neighbor] == color[node]:
