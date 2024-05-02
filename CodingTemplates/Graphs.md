@@ -950,7 +950,7 @@ def solution(n, m, edges):
         Do a topoSort-DFS as it uses stack and we need elements in stack pop order
         Create a distance array with each value = inf
         Update the source distance = 0
-        Update the distance array by popping elements from the stack in that order
+        Relaxation: Update the distance array by popping elements from the stack in that order
     '''
     # Creation of adjList
     adjList = { i:[] for i in range(n) }
