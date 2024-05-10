@@ -1,6 +1,216 @@
 
 ## MEDIUM SECTION
-### Q - 4 | Maximum Size Subarray Sum Equals k
+
+
+### L1 | Check if Array Is Sorted and Rotated
+```python
+class Solution:
+    def check(self, nums: List[int]) -> bool:
+        n = len(nums)
+        flag = 0
+        for i in range(n):
+            if nums[i] > nums[(i + 1) % n]: # the % n just takes care of the last index -> an edge case
+                if flag == 0:
+                    flag = 1
+                else:
+                    return False
+        return True
+        
+# 0 1 2 3
+# 2 1 3 4
+# nums[i] = 2 -> 1 -> 3 -> 4
+# nums[(i + 1) % n] = 1 -> 3 -> 4 -> 2((3 + 1) % 4 = 0 and nums[0] = 2)
+# flag = 0 -> 1
+
+```
+
+### L1 | Remove duplicates from sorted array
+```python
+class Solution:
+    # brute: put everything in a set and return it as a list
+    # time: O(n)
+    # space: O(n)
+
+    # optimal: Two pointer approach
+    # from 0 to pos i, everything is placed at the correct position
+    # j is the explorer
+    # whenever j sees a new element, increment i and swap both i and j elements
+    # time: O(n)
+    # space: O(1)
+    def removeDuplicates(self, nums: List[int]) -> int:
+        i, j = 0, 0
+        n = len(nums)
+        while j < n:
+            if nums[i] != nums[j]: # new num found
+                i += 1
+                nums[i], nums[j] = nums[j], nums[i]
+            j += 1
+        return i + 1
+```
+
+### L1 | Union of two sorted arrays
+```python
+# brute: hashing using hashSet
+    # time: O(n) + O(m)
+    # space: O(m + n)
+    def findUnion(self,arr1,arr2,n,m):
+        hashSet = set()
+        for i in range(n):
+            hashSet.add(arr1[i])
+        
+        for i in range(m):
+            hashSet.add(arr2[i])
+        
+        return sorted(list(hashSet))
+
+    # optimal: merge sort style 2 pointers
+    # time: O(m + n)
+    # space: O(1)
+    def findUnion(self,arr1,arr2,n,m):
+        i, j = 0, 0
+        ans = []
+        while i < n and j < m:
+            if arr1[i] <= arr2[j]:
+                if len(ans) == 0 or ans[-1] != arr1[i]:
+                    ans.append(arr1[i])
+                i += 1
+            else:
+                if len(ans) == 0 or ans[-1] != arr2[j]:
+                    ans.append(arr2[j])
+                j += 1
+        
+        while i < n:
+            if len(ans) == 0 or ans[-1] != arr1[i]:
+                ans.append(arr1[i])
+            i += 1
+        
+        while j < m:
+            if len(ans) == 0 or ans[-1] != arr2[j]:
+                ans.append(arr2[j])
+            j += 1
+                
+        return ans
+```
+
+### L1 | intersection of two sorted arrays
+```python
+
+```
+
+### L2 | Left rotate array by D places
+```python
+
+```
+
+### L2 | Move zeroes to the end
+```python
+class Solution:
+    def moveZeroes(self, nums: List[int]) -> None:
+        l, r = 0, 0
+        while r < len(nums):
+            if nums[r] != 0:
+                nums[l], nums[r] = nums[r], nums[l]
+                l += 1
+            r += 1
+```
+
+### L3 | Find missing number
+```python
+class Solution:
+    # nums = [3, 0, 1]
+    # total nos = 3
+    # range = [0, 1, 2, 3]
+
+    # method 1: sum(range) - sum(nums) = missing number
+
+    # time: O(n)
+    # space: O(1)
+
+    def missingNumber(self, nums: List[int]) -> int:
+        n = len(nums)
+        rangeSum = 0
+        sumOfNums = 0
+        for i in range(n + 1):
+            rangeSum += i
+            if i < n:
+                sumOfNums += nums[i]
+
+        return rangeSum - sumOfNums
+
+    # method 2: range ^ nums = missing number
+    # tiem: O(n)
+    # space: O(1)
+    # what's happening actually?
+    # all same nos become 0 by xoring with each other as a ^ a = 0
+    # the missing number does not have a pair, so missing num ^ 0 = missing number
+    def missingNumber(self, nums: List[int]) -> int:
+        n = len(nums)
+        res = 0
+        for i in range(n + 1):
+            res ^= i
+            if i < n:
+                res ^= nums[i] 
+        return res 
+```
+
+### L3 | Every num appears twice but 1 num appears once. find that num
+```python
+class Solution:
+    # brute: check for every num if it appears twice
+    # time: O(n**2)
+    # space: O(1)
+    def singleNumber(self, nums: List[int]) -> int:
+        n = len(nums)
+        ans = 0
+        for i in range(n):
+            cnt = 0
+            for j in range(n):
+                if i == j:
+                    continue
+                if nums[i] == nums[j]:
+                    cnt += 1
+            if cnt == 0:
+                return nums[i]
+    
+    # better: hashing -> hashArray of size = (max elem in nums) + 1 -> max elem could be 10**12 -> too large
+    # hashing -> hashMap -> works fine!
+    # time: O(n)
+    # space: O(n)
+    def singleNumber(self, nums: List[int]) -> int:
+        hashMap = {}
+        n = len(nums)
+        for num in nums:
+            hashMap[num] = 1 + hashMap.get(num, 0)
+
+        for key, value in hashMap.items():
+            if value == 1:
+                return key  
+
+    # optimal: XOR
+    # time: O(n)
+    # space: O(1)
+    def singleNumber(self, nums: List[int]) -> int:
+        res = 0
+        for num in nums:
+            res ^= num
+        return res
+```
+
+### L3 | Maximum consecutive 1s
+```python
+class Solution:
+    def findMaxConsecutiveOnes(self, nums: List[int]) -> int:
+        cnt = 0
+        maxi = 0
+        for num in nums:
+            if num == 1:
+                cnt += 1
+                maxi = max(maxi, cnt)
+            else:
+                cnt = 0
+        return maxi
+```
+### L4 | Maximum Size Subarray Sum Equals k
 ```python
 class Solution:
     # method 1: brute force: gen all subarrays + keep track of running sum of running window
@@ -13,6 +223,8 @@ class Solution:
                 runningSum += nums[r]
                 if runningSum == k:
                     maxLen = max(maxLen, r - l + 1)
+                if runningSum > k: # optimization
+                    break
         return maxLen
 
     # method 2: better: presum concept: (x - k) + k = x -> cannot be optimized further(works for +ve, -ve)
@@ -120,6 +332,12 @@ def sortArray(arr, n):
 		arr[i] = 2
 
 # O(N) - Dutch National Flag Algorithm
+
+# 0 to low - 1 -> 0000s
+# low to mid - 1 -> 1111s
+# mid to high -> unsorted
+# high + 1 to n - 1 -> 2222s
+# a[mid] can be 0, 1 or 2, based on that differnt things need to be done
 def sortArray(arr, n):
 	low, mid, high = 0, 0, n - 1
 
@@ -191,7 +409,7 @@ def maxSubarraySum(arr, n) :
         if Sum > maxi:
             maxi = Sum
         
-        if Sum < 0:
+        if Sum < 0: # carrying of negative running sum makes no sense
             Sum = 0
     
     return maxi if maxi >= 0 else 0
@@ -202,13 +420,13 @@ def maxSubarraySum(arr, n) :
     maxi = float("-inf")
     startIdx, endIdx = -1, -1
     for i in range(n):
-        if Sum == 0:
+        if Sum == 0: # whenever sum == 0, we are making a fresh start
             start = i
         Sum += arr[i]
     
         if Sum > maxi:
             maxi = Sum
-            startIdx = start
+            startIdx = start # whenever we get a better sum, obv update the start and end indices
             endIdx = i
         
         if Sum < 0:
@@ -331,7 +549,35 @@ def nextGreaterPermutation(A : List[int]) -> List[int]:
         if A[i] > A[ind]:
             A[i], A[ind] = A[ind], A[i]
             break
+
     A[ind+1:] = reverseList(A[ind+1:])
+    return A
+
+# solution through a different implementation of reversing a list(manually)
+def nextGreaterPermutation(A : List[int]) -> List[int]:
+    ind = -1
+    n = len(A)
+
+    def reverseList(i, j):
+        while i < j:
+            nums[i], nums[j] = nums[j], nums[i]
+            i += 1
+            j -= 1
+    
+    for i in range(n - 2, -1, -1):
+        if A[i] < A[i + 1]:
+            ind = i
+            break
+
+    if ind == -1: # did not find any number to swap, ie. this is the last permutation in the series, so just reverse everything to go to the first sequence
+        return reverseList(0, n - 1)
+    
+    for i in range(n - 1, ind, -1):
+        if A[i] > A[ind]:
+            A[i], A[ind] = A[ind], A[i]
+            break
+            
+    reverseList(ind + 1, n - 1)
     return A
 ```
 ### L12 - Leaders in an array
@@ -358,141 +604,136 @@ def superiorElements(a : List[int]) -> List[int]:
 ```
 ### L13 - Longest consecutive sequence
 ```python
-from typing import *
-# brute: consider each element as the start of a new sequence and try to build the sequence
-# time: O(n * n)
-# space: O(1)
+class Solution:
+    # brute: consider each num as start of new sequence and traverse entire array to see its length
+    # time:O(n**2)
+    # space:O(1)
 
-# better: set -> check if each element in the  set can be start of a seq by checking if its prev num exists in the set or not
-# if so, then try to build the sequence by adding + 1 each time and searching in the set
-def longestSuccessiveElements(a : List[int]) -> int:
-    seqSet = set(a)
-    maxi = 0
-    for num in list(seqSet):
-        if num - 1 not in seqSet:
-            Len = 1
-            start = num
-            while start + 1 in seqSet:
-                Len += 1
-                start += 1
-            
-            maxi = max(maxi, Len)
-    return maxi
+    # optimal: put everything in a set, iterate over it -> if any num's prev is absent, then that num is start of a new seq
+    # count the consecutive elements(sequence length) by searching the consecutive elements in the set
+    # time: O(n)
+    # space: O(n)
+    def longestConsecutive(self, nums: List[int]) -> int:
+        hashSet = set(nums)
+        maxi = 0
+        for num in list(hashSet):
+            if num - 1 not in hashSet:
+                cnt = 1
+                while num + cnt in hashSet:
+                    cnt += 1
+                maxi = max(maxi, cnt)
+        return maxi
 
 ```
 
 ### L14 - Set Matrix Zeroes | O(1) space
 ```python
+class Solution:
+    # brute: set everything to -1 and then to 0
+    # time: O(n**3)
+    # space: O(1)
 
-from sys import *
-from collections import *
-from math import *
+    # better: using aux arrays row and col to keep track of which cells to mark
+    # time: O(n ** 2)
+    # space: O(n + m)
+    def setZeroes(self, matrix: List[List[int]]) -> None:
+        n, m = len(matrix), len(matrix[0])
+        row = [0] * n
+        col = [0] * m
 
-# brute: set everything to -1 and then to 0
-# time: O(n**3)
-# space: O(1)
-
-# better: using aux arrays row and col to keep track of which cells to mark
-# time: O(n ** 2)
-# space: O(n + m)
-def zeroMatrix(matrix, n, m):
-    row = [0] * n
-    col = [0] * m
-
-    # mark the row and col arrays according to the given matrix
-    for r in range(n):
-        for c in range(m):
-            if matrix[r][c] == 0:
-                row[r] = 1
-                col[c] = 1
-    # update the given matrix depending on the markers row and col arrays
-    for r in range(n):
-        for c in range(m):
-            if row[r] == 1 or col[c] == 1:
-                matrix[r][c] = 0
-    
-    return matrix
-
-# optimal: same as better but here we use the 0th row and 0th col + 1 extra variable (to avoid the overlap) for the aux arrays
-# time: O(n ** 2)
-# space: O(1)
-def zeroMatrix(matrix, n, m):
-    # row: matrix[r][0]; r varies from 0 to n - 1
-    # col: matrix[0][c]; c varies from 0 to m - 1
-
-    # mark the immaginary row and col arrays
-    col0 = 1
-    for r in range(n):
-        for c in range(m):
-            if matrix[r][c] == 0:
-                matrix[r][0] = 0
-                if c == 0:
-                    col0 = 0
-                else:
-                    matrix[0][c] = 0
-             
-    # update the inner matrix first
-    for r in range(1, n):
-        for c in range(1, m):
-            if matrix[r][0] == 0 or matrix[0][c] == 0:
-                matrix[r][c] = 0
-    # update the 0th col first -> depends on matrix[r][0] where r == 0
-    if matrix[0][0] == 0: # mark the entire 0th row
-        for c in range(m):
-            matrix[0][c] = 0
-
-    # finally update the 0th row -> depends on col0 var
-    if col0 == 0:  # mark the entire 0th col
+        # mark the row and col arrays according to the given matrix
         for r in range(n):
-            matrix[r][0] = 0
+            for c in range(m):
+                if matrix[r][c] == 0:
+                    row[r] = 1
+                    col[c] = 1
+        # update the given matrix depending on the markers row and col arrays
+        for r in range(n):
+            for c in range(m):
+                if row[r] == 1 or col[c] == 1:
+                    matrix[r][c] = 0
+        
+        return matrix
+    
+    # optimal: same as better but here we use the 0th row and 0th col + 1 extra variable (to avoid the overlap) for the aux arrays
+    # time: O(n ** 2)
+    # space: O(1)
+    def setZeroes(self, matrix: List[List[int]]) -> None:
+        n, m = len(matrix), len(matrix[0])
+        # row: matrix[r][0]; r varies from 0 to n - 1
+        # col: matrix[0][c]; c varies from 0 to m - 1
 
-    return matrix 
+        # mark the immaginary row and col arrays
+        col0 = 1
+        for r in range(n):
+            for c in range(m):
+                if matrix[r][c] == 0:
+                    matrix[r][0] = 0
+                    if c == 0:
+                        col0 = 0
+                    else:
+                        matrix[0][c] = 0
+                
+        # update the inner matrix first
+        for r in range(1, n):
+            for c in range(1, m):
+                if matrix[r][0] == 0 or matrix[0][c] == 0:
+                    matrix[r][c] = 0
+        # update the 0th col first -> depends on matrix[r][0] where r == 0
+        if matrix[0][0] == 0: # mark the entire 0th row
+            for c in range(m):
+                matrix[0][c] = 0
+
+        # finally update the 0th row -> depends on col0 var
+        if col0 == 0:  # mark the entire 0th col
+            for r in range(n):
+                matrix[r][0] = 0
+
+        return matrix 
 ```
 ### L15 - Rotate matrix or image by 90 degrees
 ```python
-from typing import *
+class Solution:
+    # brute: use temp matrix and put elements according to rearrangement
+    # time: O(n * m)
+    # space: O(n * m)
+    def rotate(self, mat: List[List[int]]) -> None:
+        ROWS, COLS = len(mat), len(mat[0])
+        ans = [[0] * COLS for _ in range(ROWS)]
 
-# brute: use temp matrix and put elements according to rearrangement
-# time: O(n * m)
-# space: O(n * m)
-def rotateMatrix(mat : List[List[int]]):
-    ROWS, COLS = len(mat), len(mat[0])
-    ans = [[0] * COLS for _ in range(ROWS)]
+        for r in range(ROWS):
+            for c in range(COLS):
+                ans[c][ROWS - 1 - r] = mat[r][c]
+        
+        for r in range(ROWS):
+            for c in range(COLS):
+                mat[r][c] = ans[r][c]
 
-    for r in range(ROWS):
-        for c in range(COLS):
-            ans[c][ROWS - 1 - r] = mat[r][c]
-    
-    for r in range(ROWS):
-        for c in range(COLS):
-            mat[r][c] = ans[r][c]
+    # optimal: transpose + reverse each row
+    # time: O(N / 2 * N / 2) + O(N * N / 2)
+    # space: O(1)
+    def rotate(self, mat: List[List[int]]) -> None:
+        ROWS, COLS = len(mat), len(mat[0])
 
-# optimal: transpose + reverse each row
-# time: O(N / 2 * N / 2) + O(N * N / 2)
-# space: O(1)
-def rotateMatrix(mat : List[List[int]]):
-    ROWS, COLS = len(mat), len(mat[0])
-
-    def transpose():
-        for r in range(ROWS - 1):
-            for c in range(r + 1, COLS):
-                mat[r][c], mat[c][r] = mat[c][r], mat[r][c]
-    
-    def reverseRow(lst):
-        return lst[::-1]
-    
-    transpose()
-    for r in range(ROWS):
-        mat[r] = reverseRow(mat[r])
-    
-    return mat
+        def transpose():
+            for r in range(ROWS - 1):
+                for c in range(r + 1, COLS):
+                    mat[r][c], mat[c][r] = mat[c][r], mat[r][c]
+        
+        def reverseRow(lst):
+            return lst[::-1]
+        
+        transpose()
+        for r in range(ROWS):
+            mat[r] = reverseRow(mat[r])
+        
+        return mat
 
 ```
 ### L16 - Spiral Traversal of a matrix
 ```python
-from typing import *
-
-def spiralMatrix(matrix : List[List[int]]) -> List[int]:
+class Solution:
+    def spiralOrder(self, matrix : List[List[int]]) -> List[int]:
     ROWS, COLS = len(matrix), len(matrix[0])
     top, right, bottom, left = 0, COLS - 1, ROWS - 1, 0
 
@@ -567,7 +808,23 @@ class Solution:
 
 ### L18 - Pascal's Triangle
 ```python
+class Solution:
+    def generate(self, numRows: int) -> List[List[int]]:
 
+        def generateRow(row):
+            ans = []
+            term = 1
+            ans.append(term)
+            for c in range(1, row):
+                term *= row - c
+                term //= c
+                ans.append(term)
+            return ans
+        
+        res = []
+        for r in range(numRows):
+            res.append(generateRow(r + 1))
+        return res
 ```
 
 ### L19 - Majority Element II
