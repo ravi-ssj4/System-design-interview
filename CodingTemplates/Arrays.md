@@ -829,7 +829,85 @@ class Solution:
 
 ### L19 - Majority Element II
 ```python
+class Solution:
+    '''
+    Observations:
+    * since, we need an element > floor(n / 3), there can be multiple elements
+    * if so, we can have only 2 such unique integers in any array
+    * eg. 
+        * let's say n = 9 -> floor(9 / 3) = 3 -> element freq = 3 + 1 = 4 atleast
+        * so, let's say there are 3 majority elements -> 4 + 4 + 4 = 12, but we just have 9 nums
+    '''
+    # brute: consider every element as the majority element and check the entire array
+    # time: O(n**2)
+    # space: O(1)
+    def majorityElement(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        minFreq = math.floor(n / 3)
+        res = []
+        for i in range(n):
+            if len(res) == 0 or len(res) != 0 and res[-1] != nums[i]:
+                cnt = 0
+                for j in range(n):
+                    if nums[i] == nums[j]:
+                        cnt += 1
+                        if cnt > minFreq:
+                            res.append(nums[i])
+                            break
+            if len(res) == 2:
+                break
+        return res
 
+    # better: hashing -> hashmap of frequencies
+    # time: O(n)
+    # space: O(1)
+    def majorityElement(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        hashMap = {}
+        minFreq = math.floor(n / 3) + 1
+        res = []
+        for i in range(n):
+            hashMap[nums[i]] = 1 + hashMap.get(nums[i], 0)
+            if hashMap[nums[i]] == minFreq:
+                res.append(nums[i])
+            if len(res) == 2:
+                break
+        return res
+
+    # optimal : using Moore's voting algo extension
+    # time: O(n)
+    # space: O(1)
+    def majorityElement(self, nums: List[int]) -> List[int]:
+        n = len(nums)
+        minFreq = math.floor(n / 3) + 1
+        el1, el2, cnt1, cnt2 = float("-inf"), float("-inf"), 0, 0
+        for i in range(n):
+            if cnt1 == 0 and nums[i] != el2: # be careful not to consider an element which el2 is already considering
+                el1 = nums[i]
+                cnt1 = 1
+            elif cnt2 == 0 and nums[i] != el1: # be careful not to consider an element which el1 is already considering
+                el2 = nums[i]
+                cnt2 = 1
+            elif el1 == nums[i]:
+                cnt1 += 1
+            elif el2 == nums[i]:
+                cnt2 += 1
+            else:
+                cnt1 -= 1
+                cnt2 -= 1
+        # verification
+        cnt1, cnt2 = 0, 0
+        res = []
+        for i in range(n):
+            if nums[i] == el1:
+                cnt1 += 1
+                if cnt1 == minFreq:
+                    res.append(el1)
+            elif nums[i] == el2:
+                cnt2 += 1
+                if cnt2 == minFreq:
+                    res.append(el2)
+        return res
 ```
 
 ### L20 & L21 - 3 sum and 4 sum
