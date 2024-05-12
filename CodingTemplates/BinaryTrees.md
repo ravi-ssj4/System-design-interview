@@ -1,4 +1,4 @@
-### L8 | Level Order Traversal
+### L08 | Level Order Traversal
 ```python
 # Definition for a binary tree node.
 # class TreeNode:
@@ -27,8 +27,7 @@ class Solution:
         return res
 
 ```
-
-### L9 | Iterative Preorder Traversal
+### L09 | Iterative Preorder Traversal
 ```python
 # Definition for a binary tree node.
 # class TreeNode:
@@ -51,7 +50,6 @@ class Solution:
                     stack.append(node.left)
         return res
 ```
-
 ### L10 | Iterative inorder traversal
 ```python
 # Definition for a binary tree node.
@@ -77,12 +75,10 @@ class Solution:
                 node = node.right # go right
         return res
 ```
-
 ### L11 | Iterative postorder traversal (1 stack)
 ```python
 
 ```
-
 ### L14 | Max Depth of Binary tree
 ```python
 # Definition for a binary tree node.
@@ -109,7 +105,6 @@ class Solution:
         return maxDepthCurrent
         # return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))
 ```
-
 ### L15 | Check for Balanced Binary Tree
 ```python
 # Definition for a binary tree node.
@@ -133,7 +128,6 @@ class Solution:
         
         return dfs(root)[0]
 ```
-
 ### L16 | Diameter of Binary Tree
 ```python
 # Definition for a binary tree node.
@@ -164,7 +158,6 @@ class Solution:
         return dfs(root)[0]
 
 ```
-
 ### L17 | Maximum path sum in binary tree
 ```python
 # Definition for a binary tree node.
@@ -197,7 +190,6 @@ class Solution:
         return maxSum[0]
 
 ```
-
 ### L18 | Check if two trees are identical or not
 ```python
 # Definition for a binary tree node.
@@ -219,7 +211,6 @@ class Solution:
         
         return self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
 ```
-
 ### L19 | Zig-zag or spiral traversal in Binary Tree
 ```python
 # Definition for a binary tree node.
@@ -253,7 +244,6 @@ class Solution:
         return res
                 
 ```
-
 ### L20 | Boundary Traversal in binary tree
 ```python
 # Definition for a binary tree node.
@@ -309,7 +299,6 @@ class Solution:
         rightBoundary(root)
         return res
 ```
-
 ### L21 | Vertical order traversal
 ```python
 # Definition for a binary tree node.
@@ -354,7 +343,6 @@ class Solution:
 
         return res
 ```
-
 ### L22 | Top view
 ```python
 from collections import deque
@@ -383,7 +371,6 @@ class Solution:
             res.append(value)
         return res
 ```
-
 ### L23 | Bottom view
 ```python
 def bottomView(self, root):
@@ -405,7 +392,6 @@ def bottomView(self, root):
             res.append(value)
         return res
 ```
-
 ### L24 | Left/Right view
 ```python
 class Solution:
@@ -448,12 +434,10 @@ class Solution:
                 res.append(leftmost)
         return res
 ```
-
 ### L25 | Check for symmetrical Binary Trees
 ```python
 
 ```
-
 ### L26 - A | Print root to node path in Binary Tree
 ```python
 class Solution:
@@ -484,7 +468,6 @@ class Solution:
         return res
 
 ```
-
 ### L26 - B | Find all paths from root to all leaves
 ```python
 """
@@ -518,7 +501,6 @@ class Solution:
         rootToLeaf(root, [])
         return res
 ```
-
 ### L27 | Lowest Common ancestor in Binary Tree
 ```python
 

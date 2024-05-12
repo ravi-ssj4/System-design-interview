@@ -99,13 +99,11 @@ def frogJump(n: int, heights: List[int]) -> int:
 
     return prev1
 ```
-
 ### Question extension: Frog Jump | K jumps allowed
 
 ```python
 
 ```
-
 ### Maximum sum of non-adjacent elements | House Robber 1
 ```python
 # Simple recursion
@@ -188,7 +186,6 @@ def maximumNonAdjacentSum(nums):
     return prev1
 
 ```
-
 ### House Robber 2
 ```python
 def houseRobber(valueInHouse):
@@ -216,7 +213,6 @@ def houseRobber(valueInHouse):
 
     return max(houseRobber1(valueInHouse[1:]), houseRobber1(valueInHouse[:-1]))
 ```
-
 ### Ninja's Training
 
 ```python
@@ -335,7 +331,7 @@ def ninjaTraining(n: int, points: List[List[int]]) -> int:
 
 ## Template for Grid based problems
 
-### DP8 - Grid unique paths
+### DP 08: Grid unique paths
 
 ```python
 
@@ -420,8 +416,7 @@ def uniquePaths(m, n):
 
 
 ```
-
-### Unique Paths II
+### DP 09: Unique Paths II
 
 ```python
 
@@ -448,8 +443,7 @@ def mazeObstacles(n, m, mat):
     return dp[n - 1][m - 1]
 
 ```
-
-###  DP 10: Minimum path sum in grid
+### DP 10: Minimum path sum in grid
 
 ```python
 
@@ -574,7 +568,6 @@ def minSumPath(grid):
     return prev[m - 1]
 
 ```
-
 ### DP 11: Triangle: Fixed starting and variable ending points
 
 ```python
@@ -641,7 +634,6 @@ def minimumPathSum(triangle, n):
     
     return dp[0][0]
 ```
-
 ### DP 12: Maximum Path sum in the matrix | variable startng and variable ending points
 
 ```python
@@ -677,7 +669,6 @@ def getMaxPathSum(matrix):
     
     return maxi
 ```
-
 ### DP 13: Cherry Pickup | 3D - DP
 
 ```python
@@ -781,7 +772,7 @@ def maximumChocolates(r: int, c: int, grid: List[List[int]]) -> int:
 
 # General structure of DP on subsequences / subsets + target
 
-### Q. Subset sum equal to k
+### DP 14: Subset sum equal to k
 ```python
 
 # Recurrance relation
@@ -880,8 +871,7 @@ def subsetSumToK(n, k, arr):
     # return ans
     return prev[k]
 ```
-
-### Q. Partition equal subset sum
+### DP 15: Partition equal subset sum
 ```python
 def subsetSumEqualsK(arr, n, k):
 
@@ -915,8 +905,7 @@ def canPartition(arr, n):
 
     return subsetSumEqualsK(arr, n, totalSum // 2)
 ```
-
-### Q. Partition a set into 2 subsets with minimum absolute difference
+### DP 16: Partition a set into 2 subsets with minimum absolute difference
 ```python
 def subsetSumEqualsKModified(arr, n, k, dp):
     # base case
@@ -959,7 +948,7 @@ def minSubsetSumDifference(arr: List[str], n: int) -> int:
 
 ## Counting pattern for subsequences / subsets
 
-### Q. Counts subsets with sum k
+### DP 17: Counts subsets with sum k
 ```python
 def findWays(arr: List[int], k: int) -> int:
 
@@ -1079,8 +1068,7 @@ def findWays(arr: List[int], k: int) -> int:
     # return
     return prev[k]
 ```
-
-### Q. Counts partitions with given difference
+### DP 18: Counts partitions with given difference
 ```python
 from os import *
 from sys import *
@@ -1137,7 +1125,7 @@ def countPartitions(n: int, d: int, arr: List[int]) -> int:
 
 ## General structure of 0 / 1 knapsack type of problems - VVI for interviews
 
-### Q. 0 / 1 Knapsack
+### DP 19: 0 / 1 Knapsack
 ```python
 from os import *
 from sys import *
@@ -1260,7 +1248,6 @@ for t in range(T):
 
     print(maxProfit01Knapsack(N, wt, val, W))
 ```
-
 ### DP 20: Minimum Coins
 
 ```python
@@ -1391,48 +1378,48 @@ def targetSum(arr: List[int], target: int) -> int:
 ### DP 22: Coin Change 2
 
 ```python
-# def countWaysToMakeChange(denominations, value) :
-#     n = len(denominations)
-#     def f(ind, T):
-#         if ind == 0:
-#             return T % denominations[ind] == 0
+def countWaysToMakeChange(denominations, value) :
+    n = len(denominations)
+    def f(ind, T):
+        if ind == 0:
+            return T % denominations[ind] == 0
         
-#         if dp[ind][T] != -1:
-#             return dp[ind][T]
+        if dp[ind][T] != -1:
+            return dp[ind][T]
 
-#         notTake = f(ind - 1, T)
-#         take = 0
-#         if denominations[ind] <= T: # can take this coin and subtract from target its value but still stay at that idx
-#             take = f(ind, T - denominations[ind])
+        notTake = f(ind - 1, T)
+        take = 0
+        if denominations[ind] <= T: # can take this coin and subtract from target its value but still stay at that idx
+            take = f(ind, T - denominations[ind])
         
-#         dp[ind][T] = take + notTake
-#         return dp[ind][T]
+        dp[ind][T] = take + notTake
+        return dp[ind][T]
     
-#     dp = [[-1] * (value + 1) for _ in range(n)]
+    dp = [[-1] * (value + 1) for _ in range(n)]
 
-#     return f(n - 1, value)
+    return f(n - 1, value)
 
 
-# def countWaysToMakeChange(denominations, value) :
-#     n = len(denominations)
+def countWaysToMakeChange(denominations, value) :
+    n = len(denominations)
 
-#     dp = [[0] * (value + 1) for _ in range(n)]
+    dp = [[0] * (value + 1) for _ in range(n)]
 
-#     # for i == 0 case
-#     for T in range(value + 1):
-#         dp[0][T] = (T % denominations[0] == 0)
+    # for i == 0 case
+    for T in range(value + 1):
+        dp[0][T] = (T % denominations[0] == 0)
 
-#     for ind in range(1, n):
-#         for T in range(value + 1):
-#             notTake = dp[ind - 1][T]
+    for ind in range(1, n):
+        for T in range(value + 1):
+            notTake = dp[ind - 1][T]
 
-#             take = 0
-#             if denominations[ind] <= T:
-#                 take = dp[ind][T - denominations[ind]]
+            take = 0
+            if denominations[ind] <= T:
+                take = dp[ind][T - denominations[ind]]
             
-#             dp[ind][T] = take + notTake
+            dp[ind][T] = take + notTake
         
-#     return dp[n - 1][T]
+    return dp[n - 1][T]
 
 def countWaysToMakeChange(denominations, value) :
     n = len(denominations)
@@ -1540,64 +1527,64 @@ def unboundedKnapsack(n: int, w: int, profit: List[int], weight: List[int]) -> i
 from sys import stdin
 import sys
 
-# def cutRod(price, n):
-#     def f(ind, N):
-#         if ind == 0:
-#             return N * price[ind]
-#         if dp[ind][N] != -1:
-#             return dp[ind][N]
+def cutRod(price, n):
+    def f(ind, N):
+        if ind == 0:
+            return N * price[ind]
+        if dp[ind][N] != -1:
+            return dp[ind][N]
 
-#         notTake = f(ind - 1, N)
-#         take = float("-inf")
-#         rodLen = ind + 1
-#         if rodLen <= N:
-#             take = price[ind] + f(ind, N - rodLen)
+        notTake = f(ind - 1, N)
+        take = float("-inf")
+        rodLen = ind + 1
+        if rodLen <= N:
+            take = price[ind] + f(ind, N - rodLen)
 
-#         dp[ind][N] = max(take, notTake)
-#         return dp[ind][N]
+        dp[ind][N] = max(take, notTake)
+        return dp[ind][N]
 
-#     dp = [[-1] * (n + 1) for _ in range(n)]
-#     return f(n - 1, n)
+    dp = [[-1] * (n + 1) for _ in range(n)]
+    return f(n - 1, n)
 
-# def cutRod(price, n):
+def cutRod(price, n):
 
-#     dp = [[0] * (n + 1) for _ in range(n)]
+    dp = [[0] * (n + 1) for _ in range(n)]
     
-#     for i in range(n + 1):
-#         dp[0][i] = i * price[0]
+    for i in range(n + 1):
+        dp[0][i] = i * price[0]
 
-#     for ind in range(n):
-#         for N in range(n + 1):
-#             notTake = dp[ind - 1][N]
-#             take = float("-inf")
-#             rodLen = ind + 1
-#             if rodLen <= N:
-#                 take = price[ind] + dp[ind][N - rodLen]
+    for ind in range(n):
+        for N in range(n + 1):
+            notTake = dp[ind - 1][N]
+            take = float("-inf")
+            rodLen = ind + 1
+            if rodLen <= N:
+                take = price[ind] + dp[ind][N - rodLen]
             
-#             dp[ind][N] = max(take, notTake)
+            dp[ind][N] = max(take, notTake)
 
-#     return dp[n - 1][n]
+    return dp[n - 1][n]
 
-# def cutRod(price, n):
+def cutRod(price, n):
 
-#     prev = [0 for _ in range(n + 1)]
-#     cur = [0 for _ in range(n + 1)]
+    prev = [0 for _ in range(n + 1)]
+    cur = [0 for _ in range(n + 1)]
     
-#     for i in range(n + 1):
-#         prev[i] = i * price[0]
+    for i in range(n + 1):
+        prev[i] = i * price[0]
 
-#     for ind in range(n):
-#         for N in range(n + 1):
-#             notTake = prev[N]
-#             take = float("-inf")
-#             rodLen = ind + 1
-#             if rodLen <= N:
-#                 take = price[ind] + cur[N - rodLen]
+    for ind in range(n):
+        for N in range(n + 1):
+            notTake = prev[N]
+            take = float("-inf")
+            rodLen = ind + 1
+            if rodLen <= N:
+                take = price[ind] + cur[N - rodLen]
             
-#             cur[N] = max(take, notTake)
-#         prev = cur.copy()
+            cur[N] = max(take, notTake)
+        prev = cur.copy()
 
-#     return prev[n]
+    return prev[n]
 
 def cutRod(price, n):
 

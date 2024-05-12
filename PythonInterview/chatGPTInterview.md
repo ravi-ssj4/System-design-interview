@@ -125,6 +125,154 @@ class TestSum(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 ```
+## The following are some unit tests for my ewsct application:
+Your application, structured as a FastAPI service with several endpoints and functionalities, can be tested effectively using `pytest` along with FastAPI's `TestClient`. Here are some suggested test cases and the corresponding `pytest` code that covers various aspects of your application, such as middleware, API endpoints, and response handling.
+
+1. **Middleware Testing**: Ensure the middleware correctly logs and handles the request and response headers.
+2. **Endpoint Testing**: Each endpoint should be tested for various scenarios, including success, client errors (e.g., 400, 404), and server errors (e.g., 500).
+3. **File Handling**: Verify the file download and upload functionalities, ensuring files are correctly processed and appropriate responses are returned.
+
+Here is a basic structure of the test cases using `pytest`:
+
+```python
+import pytest
+from httpx import AsyncClient
+from main import app  # Ensure your application is correctly imported
+
+@pytest.fixture
+def client():
+    return AsyncClient(app=app, base_url="http://test")
+
+def test_doc_redirect(client):
+    response = client.get("/")
+    assert response.status_code == 200
+    assert response.url.path == "/docs"
+
+@pytest.mark.asyncio
+async def test_download_ewsct_template_success(client):
+    response = await client.get("/api-manageability-ewsct/v1/downloads/template/purley")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/zip"
+
+@pytest.mark.asyncio
+async def test_download_ewsct_template_not_found(client):
+    response = await client.get("/api-manageability-ewsct/v1/downloads/template/nonexistent")
+    assert response.status_code == 404
+
+@pytest.mark.asyncio
+async def test_create_bin_edss_success(client):
+    files = {'file': ('filename.zip', b'Fake content', 'application/zip')}
+    response = await client.post("/create-image", files=files, data={"family": "purley", "customer_id": "123"})
+    assert response.status_code == 200
+    assert response.headers["content-disposition"] == 'attachment; filename="customized_ewsct.zip"'
+
+@pytest.mark.asyncio
+async def test_create_bin_edss_bad_request(client):
+    response = await client.post("/create-image", json={"family": "purley", "customer_id": "123"})
+    assert response.status_code == 400
+
+@pytest.mark.asyncio
+async def test_check_api_health(client):
+    response = await client.get("/health")
+    assert response.status_code == 200
+    assert response.text == '"OK"'
+
+def test_middleware(client):
+    # This should be modified based on what specific middleware testing needs to be done
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.headers["Strict-Transport-Security"] == "max-age=1024000; includeSubDomains"
+
+# More test cases can be added for detailed testing of each function and error handling.
+```
+
+### Things to Consider:
+- **Environment and Setup**: Ensure your tests are running in an environment where your FastAPI application is accessible and the required services (like database or file system) are mocked or available.
+- **Data and Dependency Mocking**: For file handling and database interactions, consider mocking these to avoid side effects from running tests.
+- **Coverage and Edge Cases**: Expand the test cases to cover edge cases and error handling paths to improve the robustness of your tests.
+
+## tests for create_image_edss_service.py
+
+To effectively test your function `create_image_edss` from your FastAPI application using `pytest`, you'll need to consider a variety of scenarios, including input validation, handling of file uploads, external service interactions, and proper error handling. Below are the proposed test cases, including the necessary setup for mocks to simulate interactions with file systems, external APIs, and internal function calls.
+
+Here is an overview of the test cases:
+1. **Test for successful image creation** - Ensuring the function behaves as expected under normal conditions.
+2. **Test for failure in customer ID validation** - Checking the response when an invalid customer ID is provided.
+3. **Test for file extraction failure** - What happens if the file extraction process fails.
+4. **Test for certificate retrieval issues** - Handling failures during certificate retrieval from an external service.
+5. **Test for environment setup failure** - What occurs when required environment variables are not set properly.
+
+Here’s how you might write these tests using `pytest` and mocking the necessary parts:
+
+```python
+import pytest
+from unittest.mock import patch, AsyncMock
+from fastapi import UploadFile, HTTPException, status
+from your_application_module import create_image_edss  # Adjust the import according to your project structure
+
+@pytest.fixture
+def mock_env(monkeypatch):
+    monkeypatch.setenv("KMS_URL", "https://fake-kms-url.com")
+
+@pytest.fixture
+def test_file():
+    return UploadFile(filename="test.zip", content_type="application/zip")
+
+@pytest.mark.asyncio
+@patch('your_application_module.requests.get')
+@patch('your_application_module.get_contents_and_extract')
+@patch('your_application_module.create_user_response_bundle')
+@patch('your_application_module.run_ewsct_command')
+@patch('your_application_module.check_user_inputs')
+@patch('your_application_module.make_user_dir')
+async def test_create_image_edss_success(mock_make_user_dir, mock_check_user_inputs, mock_run_ewsct_command, mock_create_user_response_bundle, mock_get_contents_and_extract, mock_requests_get, mock_env, test_file):
+    # Setup
+    mock_make_user_dir.return_value = "/fake_dir"
+    mock_check_user_inputs.return_value = None
+    mock_run_ewsct_command.return_value = None
+    mock_create_user_response_bundle.return_value = "fake_archive"
+    mock_get_contents_and_extract.return_value = ("success", "extracted_folder_name")
+    mock_requests_get.return_value = AsyncMock(status_code=200, content=b'Certificate content')
+    
+    # Mock request
+    mock_request = AsyncMock()
+    mock_request.url.__str__.return_value = "http://test.com/api"
+
+    # Action
+    result = await create_image_edss(test_file, "family", "customer_id", "/image_dir", "/root_dir", "hash_val", mock_request)
+    
+    # Assert
+    assert "fake_archive.zip" in result
+
+@pytest.mark.asyncio
+@patch('your_application_module.requests.get')
+@patch('your_application_module.get_contents_and_extract')
+@patch('your_application_module.check_user_inputs', side_effect=HTTPException(status_code=400, detail="Invalid input"))
+async def test_create_image_edss_invalid_customer_id(mock_check_user_inputs, mock_get_contents_and_extract, mock_requests_get, test_file):
+    # Setup
+    mock_requests_get.return_value = AsyncMock(status_code=200)
+    mock_get_contents_and_extract.return_value = ("success", "extracted_folder_name")
+
+    # Mock request
+    mock_request = AsyncMock()
+    mock_request.url.__str__.return_value = "http://test.com/api"
+
+    # Action & Assert
+    with pytest.raises(HTTPException) as exc_info:
+        await create_image_edss(test_file, "invalid_family", "invalid_customer_id", "/image_dir", "/root_dir", "hash_val", mock_request)
+    assert exc_info.value.status_code == 400
+    assert "Invalid input" in str(exc_info.value.detail)
+
+# Additional tests can be implemented following the pattern above to cover other failure cases and edge cases.
+```
+
+### Notes:
+- **Environment Mocking**: Use the `mock_env` fixture to set up necessary environment variables.
+- **HTTP Mocking**: `mock_requests_get` is used to simulate external API calls, which are crucial in your application.
+- **Async Function Mocking**: Functions like `requests.get` that are used asynchronously in the real application are replaced with `AsyncMock`.
+- **File Handling**: Since handling files involves I/O operations, ensure the `UploadFile` instances are used properly without needing actual files.
+
+These test cases focus on the most crucial and likely to fail interactions in the code. Adjustments and additional detailed tests might be necessary based on the exact behavior and additional functionalities of your application.
 
 ### Question 9: Development Tools
 **Answer:** I primarily use PyCharm for Python development because it offers intelligent code completion, on-the-fly error checking, and integration with various Python scientific stacks, making it ideal for both web and scientific development.
