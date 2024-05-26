@@ -213,10 +213,141 @@ def houseRobber(valueInHouse):
 
     return max(houseRobber1(valueInHouse[1:]), houseRobber1(valueInHouse[:-1]))
 ```
+### Leetcode(M): Jump Game I
+```python
+class Solution:
+    # def canJump(self, nums: List[int]) -> bool:
+    #     n = len(nums)
+
+    #     def f(i): # tells if we can come from index i to index n - 1 or not
+    #         # base case
+    #         if dp[i] != -1:
+    #             return dp[i]
+
+    #         if i >= n - 1:
+    #             return True
+
+    #         # gen case
+    #         canJump = False
+
+    #         for jumpLength in range(1, nums[i] + 1):
+    #             nextIdx = i + jumpLength
+    #             canJump = canJump or f(nextIdx)
+                
+    #         dp[i] = canJump
+    #         return dp[i]
+        
+    #     dp = [-1] * n
+    #     return f(0)
+
+    # def canJump(self, nums: List[int]) -> bool:
+    #     n = len(nums)
+    #     dp = [False] * n
+    #     # base case
+    #     dp[n - 1] = True
+    #     # gen case
+    #     for i in range(n - 2, -1, -1):
+    #         # gen case
+    #         canJump = False
+    #         for jumpLength in range(1, nums[i] + 1):
+    #             nextIdx = i + jumpLength
+    #             canJump = canJump or dp[nextIdx]
+    #         dp[i] = canJump
+    #     return dp[0]
+
+    # Greedy (intuition)
+    # in Tabulation, observation: for any index i, we are checking if 
+    # it can reach any good idx by making it jump by 1, 2,.. nums[i] steps -> this is not needed
+    # in the max distance jump that we can make from the index i, if its able to reach the leftmost 
+    # good index, its good enough -> ie. it can reach to it -> after that it itself will become the 
+    # leftmost good index for the previous indices -> it itself will become the goal for the previous indices
+    def canJump(self, nums: List[int]) -> bool:
+        n = len(nums)
+        leftMostGoodIdx = n - 1
+        
+        for i in range(n - 2, -1, -1):
+            maxJumpDistance = i + nums[i]
+            if maxJumpDistance >= leftMostGoodIdx: # means the current idx can reach the final goal(leftMostGoodIdx)
+                leftMostGoodIdx = i
+            
+        return leftMostGoodIdx == 0
+```
 ### Ninja's Training
 
 ```python
-from typing import *
+
+# Recursion from i = 0 to n - 1
+def maximumPoints(self, points, n):
+        def f(i, prevTask):
+            if i == n - 1:
+                maxi = float("-inf")
+                for curTask in range(3):
+                    if curTask == prevTask:
+                        continue
+                    maxi = max(maxi, points[i][curTask]) 
+                return maxi
+            
+            # general case
+            maxi = float("-inf")
+            for curTask in range(3):
+                if curTask == prevTask:
+                    continue
+                total = points[i][curTask] + f(i + 1, curTask)
+                maxi = max(maxi, total)
+            
+            return maxi
+        
+        return f(0, -1)
+                
+    def maximumPoints(self, points, n):
+        def f(i, prevTask):
+            
+            if i == n - 1:
+                maxi = 0
+                for curTask in range(3):
+                    if curTask != prevTask:
+                        maxi = max(maxi, points[i][curTask]) 
+                return maxi
+                
+            if dp[i][prevTask] != -1:
+                return dp[i][prevTask]
+            
+            # general case
+            maxi = 0
+            for curTask in range(3):
+                if curTask != prevTask:
+                    total = points[i][curTask] + f(i + 1, curTask)
+                    maxi = max(maxi, total)
+            
+            dp[i][prevTask] = maxi
+            return dp[i][prevTask]
+        
+        dp = [[-1] * 4 for _ in range(n)]
+        return f(0, 3)
+            
+    def maximumPoints(self, points, n):
+        
+        dp = [[0] * 4 for _ in range(n)]
+        
+        dp[n - 1][0] = max(points[n - 1][1], points[n - 1][2])
+        dp[n - 1][1] = max(points[n - 1][0], points[n - 1][2])
+        dp[n - 1][2] = max(points[n - 1][0], points[n - 1][1])
+        dp[n - 1][3] = max(points[n - 1][0], points[n - 1][1], points[n - 1][2])
+        
+        for i in range(n - 2, -1, -1):
+            for prevTask in range(4):
+                maxi = 0
+                for curTask in range(3):
+                    if curTask != prevTask:
+                        total = points[i][curTask] + dp[i + 1][curTask]
+                        maxi = max(maxi, total)
+                        
+                dp[i][prevTask] = maxi
+        
+        return dp[0][3]
+
+
+# Recursion from n - 1 to 0
 
 # simple recursion
 def ninjaTraining(n: int, points: List[List[int]]) -> int:
@@ -443,7 +574,7 @@ def mazeObstacles(n, m, mat):
     return dp[n - 1][m - 1]
 
 ```
-### DP 10: Minimum path sum in grid
+### DP 10: Minimum path sum in grid: Fixed start and fixed ending
 
 ```python
 
@@ -512,7 +643,7 @@ def minSumPath(grid):
     # loop for states
     for i in range(n):
         for j in range(m):
-            if i == 0 and j == 0:
+            if i == 0 and j == 0: # covering the base case like this
                 dp[i][j] = grid[i][j]
             else:
                 up = grid[i][j]
@@ -538,13 +669,13 @@ def minSumPath(grid):
     n, m = len(grid), len(grid[0])
     
     prev = [0] * m
+    cur = [0] * m
 
     # base case
     # dp[0][0] = grid[i][j]
 
     # loop for states
     for i in range(n):
-        cur = [0] * m
         for j in range(m):
             if i == 0 and j == 0:
                 cur[j] = grid[i][j]
@@ -563,7 +694,7 @@ def minSumPath(grid):
                     
                 cur[j] = min(up, left)
 
-        prev = cur
+        prev = cur.copy()
 
     return prev[m - 1]
 
@@ -577,7 +708,7 @@ def minimumPathSum(triangle, n):
     def f(i, j): # min path sum to go from index (i, j) to the last row(i == n - 1 and j varies from 0 to n - 1)
         # base case
         if i == n - 1:
-            return triangle[i][j] # just return the cell you are at, all are valid answers
+            return triangle[i][j] # just return the cell you are at, all are valid answers(all cols are valid)
         
         # no issue of going out of bounds as it can move only down or rightDiagonal
 
@@ -647,7 +778,7 @@ def getMaxPathSum(matrix):
             return -1e8
 
         if i == 0:
-            return matrix[i][j]
+            return matrix[i][j] # all cols are valid ending points
         
         if dp[i][j] != -1:
             return dp[i][j]
@@ -1021,7 +1152,7 @@ def findWays(arr: List[int], k: int) -> int:
     for i in range(n):
         dp[i][0] = 1
     # i == 0
-    if arr[i] <= k:
+    if arr[0] <= k:
         dp[0][arr[0]] = 1
 
     # general case
@@ -1252,91 +1383,146 @@ for t in range(T):
 
 ```python
 
-def minimumElements(num: List[int], x: int) -> int:
-
-    def f(ind, T):
-        if ind == 0:
-            if T % num[0] == 0:
-                return T // num[0]
-            else:
-                return float("inf")
+class Solution:
+    # def coinChange(self, coins: List[int], amount: int) -> int:
+    #     n = len(coins)
+    #     def f(i, target):
+    #         # base cases
+    #         if i == 0:
+    #             if target % coins[0] == 0:
+    #                 return target // coins[0]
+    #             else:
+    #                 return -1
+    #         if target == 0:
+    #             return 0
         
-        if dp[ind][T] != -1:
-            return dp[ind][T]
+    #         # gen case
+    #         notTake = 0 + f(i - 1, target)
+    #         take = float("inf")
+    #         if coins[i] <= target:
+    #             take = 1 + f(i, target - coins[i])
             
-        # general case
-        notTake = 0 + f(ind - 1, T)
-        take = float("inf")
-        if num[ind] <= T:
-            take = 1 + f(ind, T - num[ind])
+    #         return min(take, notTake)
         
-        dp[ind][T] = min(take, notTake)
-        return dp[ind][T]
-    
-    dp = [[-1] * (x + 1) for _ in range(len(num))]
+    #     return f(n - 1, amount)
 
-    ans = f(len(num) - 1, x)
-    if ans == float("inf"):
-        return -1
-    else:
-        return ans
-
-def minimumElements(num: List[int], x: int) -> int:
-    
-    n = len(num)
-
-    dp = [[0] * (x + 1) for _ in range(n)]
-
-    for t in range(x + 1):
-        if t % num[0] == 0:
-            dp[0][t] = t // num[0]
-        else:
-            dp[0][t] = float("inf")
-    
-    for ind in range(1, n):
-        for T in range(x + 1):
-            notTake = dp[ind - 1][T]
-            take = float("inf")
-            if num[ind] <= T: # then we can take it
-                take = 1 + dp[ind][T - num[ind]]
-
-            dp[ind][T] = min(take, notTake)
-
-    ans = dp[n - 1][x]
-    if ans == float("inf"):
-        return -1
-    else:
-        return ans
-
-def minimumElements(num: List[int], x: int) -> int:
-    
-    n = len(num)
-
-    prev = [0 for _ in range(x + 1)]
-    cur = [0 for _ in range(x + 1)]
-
-    for t in range(x + 1):
-        if t % num[0] == 0:
-            prev[t] = t // num[0]
-        else:
-            prev[t] = float("inf")
-    
-    for ind in range(1, n):
-        for T in range(x + 1):
-            notTake = prev[T]
-            take = float("inf")
-            if num[ind] <= T: # then we can take it
-                take = 1 + cur[T - num[ind]]
-
-            cur[T] = min(take, notTake)
+    # def coinChange(self, coins: List[int], amount: int) -> int:
+    #     n = len(coins)
+    #     def f(i, target):
+    #         # base cases
+    #         if dp[i][target] != -1:
+    #             return dp[i][target]
+    #         if i == 0:
+    #             if target % coins[0] == 0:
+    #                 return target // coins[0]
+    #             else:
+    #                 return -1
+    #         if target == 0:
+    #             return 0
         
-        prev = cur
+    #         # gen case
+    #         notTake = 0 + f(i - 1, target)
+    #         take = float("inf")
+    #         if coins[i] <= target:
+    #             take = 1 + f(i, target - coins[i])
+            
+    #         dp[i][target] = min(take, notTake)
+    #         return dp[i][target]
 
-    ans = prev[x]
-    if ans == float("inf"):
-        return -1
-    else:
-        return ans
+    #     dp = [[-1] * (amount + 1) for _ in range(n)]
+    #     return f(n - 1, amount)
+
+    # def coinChange(self, coins: List[int], amount: int) -> int:
+    #     n = len(coins)
+    #     def f(i, target):
+    #         # base cases
+    #         if dp[i][target] != -1:
+    #             return dp[i][target]
+
+    #         if i == 0:
+    #             if target % coins[0] == 0:
+    #                 return target // coins[0]
+    #             else:
+    #                 return float("inf")
+        
+    #         # gen case
+    #         notTake = 0 + f(i - 1, target)
+    #         take = float("inf")
+    #         if coins[i] <= target:
+    #             take = 1 + f(i, target - coins[i])
+            
+    #         dp[i][target] = min(take, notTake)
+
+    #         return dp[i][target]
+            
+    #     dp = [[-1] * (amount + 1) for _ in range(n)]
+        
+    #     res = f(n - 1, amount)
+        
+    #     if res == float("inf"):
+    #         return -1
+    #     else:
+    #         return res
+
+    # def coinChange(self, coins: List[int], amount: int) -> int:
+    #     n = len(coins)
+    #     dp = [[0] * (amount + 1) for _ in range(n)]
+    #     # base cases
+    #     # i == 0
+    #     for target in range(1, amount + 1):
+    #         # if target < coins[0]:
+    #         #     dp[0][target] = float("inf")
+    #         #     continue
+    #         if target % coins[0]:
+    #             dp[0][target] = float("inf")
+    #             continue
+    #         dp[0][target] = target // coins[0]
+
+    #     # gen case
+    #     for i in range(1, n):
+    #         for target in range(1, amount + 1):
+    #             # gen case
+    #             notTake = 0 + dp[i - 1][target]
+    #             take = float("inf")
+    #             if coins[i] <= target:
+    #                 take = 1 + dp[i][target - coins[i]]
+    #             dp[i][target] = min(take, notTake)
+    #     res = dp[n - 1][amount]
+    #     if res == float("inf"):
+    #         return -1
+    #     else:
+    #         return res
+
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        n = len(coins)
+        prev = [0] * (amount + 1)
+        cur = [0] * (amount + 1)
+        # base cases
+        # i == 0
+        for target in range(1, amount + 1):
+            # if target < coins[0]:
+            #     dp[0][target] = float("inf")
+            #     continue
+            if target % coins[0]:
+                prev[target] = float("inf")
+                continue
+            prev[target] = target // coins[0]
+
+        # gen case
+        for i in range(1, n):
+            for target in range(1, amount + 1):
+                # gen case
+                notTake = 0 + prev[target]
+                take = float("inf")
+                if coins[i] <= target:
+                    take = 1 + cur[target - coins[i]]
+                cur[target] = min(take, notTake)
+            prev = cur.copy()
+        res = prev[amount]
+        if res == float("inf"):
+            return -1
+        else:
+            return res
 ```
 ### DP 21: Target Sum
 
@@ -1521,6 +1707,138 @@ def unboundedKnapsack(n: int, w: int, profit: List[int], weight: List[int]) -> i
             prev[cap] = max(take, notTake)
     return prev[w]
 ```
+
+### Leetcode(M): Perfect Squares
+```python
+class Solution:
+    # def numSquares(self, n: int) -> int:
+    #     num = 1
+    #     ps = num * num
+    #     arr = []
+    #     while ps <= n:
+    #         arr.append(ps)
+    #         num += 1
+    #         ps = num * num
+        
+    #     def f(i, target):
+    #         # base case
+    #         if target == 0:
+    #             return 0
+    #         if i == 0:
+    #             return target // arr[0]
+    #         # gen case
+    #         notTake = f(i - 1, target)
+    #         take = float("inf")
+    #         if arr[i] <= target:
+    #             take = 1 + f(i, target - arr[i])
+
+    #         return min(take, notTake)
+
+    #     return f(len(arr) - 1, n)
+
+    # def numSquares(self, n: int) -> int:
+    #     num = 1
+    #     ps = num * num
+    #     arr = []
+    #     while ps <= n:
+    #         arr.append(ps)
+    #         num += 1
+    #         ps = num * num
+        
+    #     def f(i, target):
+    #         # base case
+    #         if dp[i][target] != -1:
+    #             return dp[i][target]
+
+    #         if target == 0:
+    #             return 0
+    #         if i == 0:
+    #             return target // arr[0]
+            
+    #         # gen case
+    #         notTake = f(i - 1, target)
+    #         take = float("inf")
+    #         if arr[i] <= target:
+    #             take = 1 + f(i, target - arr[i])
+
+    #         dp[i][target] = min(take, notTake)
+    #         return dp[i][target]
+
+    #     N = len(arr)
+    #     dp = [[-1] * (n + 1) for _ in range(N)]
+    #     return f(N - 1, n)
+
+    # def numSquares(self, n: int) -> int:
+    #     num = 1
+    #     ps = num * num
+    #     arr = []
+    #     while ps <= n:
+    #         arr.append(ps)
+    #         num += 1
+    #         ps = num * num
+
+    #     N = len(arr)
+    #     dp = [[0] * (n + 1) for _ in range(N)]
+
+    #     # base case
+    #     # if target == 0
+    #     # for i in range(N):
+    #     #     dp[i][0] = 0
+    #     # if i == 0
+    #     for target in range(n + 1):
+    #         if target % arr[0] == 0:
+    #             dp[0][target] = target // arr[0]
+
+    #     # general case
+    #     for i in range(1, N):
+    #         for target in range(1, n + 1):
+    #             # gen case
+    #             notTake = dp[i - 1][target]
+
+    #             take = float("inf")
+    #             if arr[i] <= target:
+    #                 take = 1 + dp[i][target - arr[i]]
+
+    #             dp[i][target] = min(take, notTake)
+        
+    #     return dp[N - 1][n]
+
+    def numSquares(self, n: int) -> int:
+        num = 1
+        ps = num * num
+        arr = []
+        while ps <= n:
+            arr.append(ps)
+            num += 1
+            ps = num * num
+
+        N = len(arr)
+        
+        prev = [0] * (n + 1)
+        cur = [0] * (n + 1)
+
+        # base case
+        for target in range(n + 1):
+            if target % arr[0] == 0:
+                prev[target] = target // arr[0]
+
+        # general case
+        for i in range(1, N):
+            for target in range(1, n + 1):
+                # gen case
+                notTake = prev[target]
+
+                take = float("inf")
+                if arr[i] <= target:
+                    take = 1 + cur[target - arr[i]]
+
+                cur[target] = min(take, notTake)
+            
+            prev = cur.copy()
+        
+        return prev[n]
+```
+
 ### DP 24: Rod Cutting Problem
 
 ```python
