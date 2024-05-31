@@ -109,3 +109,16 @@ class ProductServiceApplicationTests {
 
 
 ```
+
+### API Gateway using Spring Cloud's own Gateway service
+```java
+// The api gateway provides a plethora of features:
+// https://spring.io/projects/spring-cloud-gateway
+
+// Note: The API gateway connects with all services within via http and not https(as everything is in our internal n/w and protected)
+// Only the API gateway is exposed to the outside world, hence it receives https requests
+// The main job of API Gateway:
+// Accept the client request and re-route those requests to specific service (let's say product service has multiple instances)
+// It does so by providing load balancing out of the box
+
+```

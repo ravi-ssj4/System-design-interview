@@ -1707,7 +1707,106 @@ def unboundedKnapsack(n: int, w: int, profit: List[int], weight: List[int]) -> i
             prev[cap] = max(take, notTake)
     return prev[w]
 ```
+### DP 24: Rod Cutting Problem
 
+```python
+from sys import stdin
+import sys
+
+def cutRod(price, n):
+    def f(ind, N):
+        if ind == 0:
+            return N * price[ind]
+        if dp[ind][N] != -1:
+            return dp[ind][N]
+
+        notTake = f(ind - 1, N)
+        take = float("-inf")
+        rodLen = ind + 1
+        if rodLen <= N:
+            take = price[ind] + f(ind, N - rodLen)
+
+        dp[ind][N] = max(take, notTake)
+        return dp[ind][N]
+
+    dp = [[-1] * (n + 1) for _ in range(n)]
+    return f(n - 1, n)
+
+def cutRod(price, n):
+
+    dp = [[0] * (n + 1) for _ in range(n)]
+    
+    for i in range(n + 1):
+        dp[0][i] = i * price[0]
+
+    for ind in range(n):
+        for N in range(n + 1):
+            notTake = dp[ind - 1][N]
+            take = float("-inf")
+            rodLen = ind + 1
+            if rodLen <= N:
+                take = price[ind] + dp[ind][N - rodLen]
+            
+            dp[ind][N] = max(take, notTake)
+
+    return dp[n - 1][n]
+
+def cutRod(price, n):
+
+    prev = [0 for _ in range(n + 1)]
+    cur = [0 for _ in range(n + 1)]
+    
+    for i in range(n + 1):
+        prev[i] = i * price[0]
+
+    for ind in range(n):
+        for N in range(n + 1):
+            notTake = prev[N]
+            take = float("-inf")
+            rodLen = ind + 1
+            if rodLen <= N:
+                take = price[ind] + cur[N - rodLen]
+            
+            cur[N] = max(take, notTake)
+        prev = cur.copy()
+
+    return prev[n]
+
+def cutRod(price, n):
+
+    prev = [0 for _ in range(n + 1)]
+    
+    for i in range(n + 1):
+        prev[i] = i * price[0]
+
+    for ind in range(n):
+        for N in range(n + 1):
+            notTake = prev[N]
+            take = float("-inf")
+            rodLen = ind + 1
+            if rodLen <= N:
+                take = price[ind] + prev[N - rodLen]
+            
+            prev[N] = max(take, notTake)
+
+    return prev[n]
+
+# Taking input using fast I/O.
+def takeInput():
+    n = int(input())
+
+    price = list(map(int, input().strip().split(" ")))
+
+    return price, n
+
+
+# Main.
+t = int(input())
+while t:
+    price, n = takeInput()
+    print(cutRod(price, n))
+    t = t-1
+```
 ### Leetcode(M): Perfect Squares
 ```python
 class Solution:
@@ -1838,105 +1937,91 @@ class Solution:
         
         return prev[n]
 ```
-
-### DP 24: Rod Cutting Problem
-
+### Leetcode(M): Decode ways
 ```python
-from sys import stdin
-import sys
+class Solution:
+    def numDecodings(self, s: str) -> int:
+        n = len(s)
+        def f(i):
+            if i >= n:
+                return 1 
+            if s[i] == "0":
+                return 0
 
-def cutRod(price, n):
-    def f(ind, N):
-        if ind == 0:
-            return N * price[ind]
-        if dp[ind][N] != -1:
-            return dp[ind][N]
-
-        notTake = f(ind - 1, N)
-        take = float("-inf")
-        rodLen = ind + 1
-        if rodLen <= N:
-            take = price[ind] + f(ind, N - rodLen)
-
-        dp[ind][N] = max(take, notTake)
-        return dp[ind][N]
-
-    dp = [[-1] * (n + 1) for _ in range(n)]
-    return f(n - 1, n)
-
-def cutRod(price, n):
-
-    dp = [[0] * (n + 1) for _ in range(n)]
-    
-    for i in range(n + 1):
-        dp[0][i] = i * price[0]
-
-    for ind in range(n):
-        for N in range(n + 1):
-            notTake = dp[ind - 1][N]
-            take = float("-inf")
-            rodLen = ind + 1
-            if rodLen <= N:
-                take = price[ind] + dp[ind][N - rodLen]
+            # gen case
+            takeOne = f(i + 1)
             
-            dp[ind][N] = max(take, notTake)
-
-    return dp[n - 1][n]
-
-def cutRod(price, n):
-
-    prev = [0 for _ in range(n + 1)]
-    cur = [0 for _ in range(n + 1)]
-    
-    for i in range(n + 1):
-        prev[i] = i * price[0]
-
-    for ind in range(n):
-        for N in range(n + 1):
-            notTake = prev[N]
-            take = float("-inf")
-            rodLen = ind + 1
-            if rodLen <= N:
-                take = price[ind] + cur[N - rodLen]
+            takeTwo = 0
+            if ((i + 1) < n):
+                if (s[i] == "1" or 
+                    s[i] == "2" and s[i + 1] in "0123456"):
+                    takeTwo = f(i + 2)
             
-            cur[N] = max(take, notTake)
-        prev = cur.copy()
+            return takeOne + takeTwo
+        
+        return f(0)
 
-    return prev[n]
+    def numDecodings(self, s: str) -> int:
+        n = len(s)
+        def f(i):
+            if dp[i] != -1:
+                return dp[i]
+            if i >= n:
+                return 1 
+            if s[i] == "0":
+                return 0
 
-def cutRod(price, n):
-
-    prev = [0 for _ in range(n + 1)]
-    
-    for i in range(n + 1):
-        prev[i] = i * price[0]
-
-    for ind in range(n):
-        for N in range(n + 1):
-            notTake = prev[N]
-            take = float("-inf")
-            rodLen = ind + 1
-            if rodLen <= N:
-                take = price[ind] + prev[N - rodLen]
+            # gen case
+            takeOne = f(i + 1)
+            takeTwo = 0
+            if ((i + 1) < n):
+                if (s[i] == "1" or 
+                    s[i] == "2" and s[i + 1] in "0123456"):
+                    takeTwo = f(i + 2)
             
-            prev[N] = max(take, notTake)
+            dp[i] = takeOne + takeTwo
+            return dp[i]
+        dp = [-1] * (n + 1)
+        return f(0)
 
-    return prev[n]
+    def numDecodings(self, s: str) -> int:
+        n = len(s)
+        dp = [0] * (n + 1)
+        # base case
+        dp[n] = 1
+        # gen case
+        for i in range(n - 1, -1, -1):
+            if s[i] == "0":
+                continue
+            takeOne = dp[i + 1]
+            takeTwo = 0
+            if i + 1 < n and (s[i] == '1' or (s[i] == '2' and s[i + 1] in '0123456')):
+                takeTwo = dp[i + 2]
+            
+            dp[i] = takeOne + takeTwo 
+        return dp[0]
 
-# Taking input using fast I/O.
-def takeInput():
-    n = int(input())
+    def numDecodings(self, s: str) -> int:
+        n = len(s)
+        # base case
+        iPlusOne = 1
+        iPlusTwo = 1
 
-    price = list(map(int, input().strip().split(" ")))
+        # gen case
+        for i in range(n - 1, -1, -1):
+            
+            takeOne = 0
+            if s[i] != "0":
+                takeOne = iPlusOne
+            
+            takeTwo = 0
+            if i + 1 < n and (s[i] == '1' or (s[i] == '2' and s[i + 1] in '0123456')):
+                takeTwo = iPlusTwo
+            
+            temp = takeOne + takeTwo
 
-    return price, n
-
-
-# Main.
-t = int(input())
-while t:
-    price, n = takeInput()
-    print(cutRod(price, n))
-    t = t-1
+            iPlusTwo = iPlusOne
+            iPlusOne = temp
+            
+        return iPlusOne
 ```
-

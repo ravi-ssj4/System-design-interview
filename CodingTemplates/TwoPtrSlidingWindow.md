@@ -430,6 +430,7 @@ class Solution:
 ```python
 class Solution:
     # Method 1: Brute force: Based on windows starting at index l -> left to right + Gen. all substrings
+    # intuition: counting all valid subarrays starting at a particular index
     # time: O(n**2), space: O(3) = O(1)
     def numberOfSubstrings(self, s: str) -> int:
         n = len(s)
@@ -448,6 +449,7 @@ class Solution:
 
 
     # Method 2: Better(SW + TP): Based on windows ending at index r -> left to right
+    # intuition: counting all valid subarrays ending at a particular index
     # time: O(n), space: O(1)
     def numberOfSubstrings(self, s: str) -> int:
         
@@ -457,8 +459,8 @@ class Solution:
 
         for i in range(n):
             lastSeen[ord(s[i]) - ord('a')] = i
-            if lastSeen[0] != -1 and lastSeen[1] != -1 and lastSeen[2] != -1: # valid window
-                cnt = cnt + (1 + min(lastSeen[0], lastSeen[1], lastSeen[2]))
+            # if lastSeen[0] != -1 and lastSeen[1] != -1 and lastSeen[2] != -1: # valid window -> not needed (when window is invalid the min() term will give -1 -> cnt += (1 - 1))
+            cnt = cnt + (1 + min(lastSeen[0], lastSeen[1], lastSeen[2]))
 
         return cnt
 
@@ -503,15 +505,17 @@ class Solution:
 
         for r in range(n): # O(n)
             # update the map and maxFreq
-            hashMap[ord(s[r]) - ord('A')] = 1 + hashMap.get(ord(s[r]) - ord('A'), 0)
-            maxFreq = max(maxFreq, hashMap[ord(s[r]) - ord('A')])
+            hashMap[s[r]] = 1 + hashMap.get(s[r], 0)
+            # update max freq with every map update -> because current element can only increase it
+            maxFreq = max(maxFreq, hashMap[s[r]])
 
             # make the window valid by shrinking
-            while (r - l + 1) - maxFreq > k:
-                hashMap[ord(s[l]) - ord('A')] -= 1
+            # because current window size - current max freq = the num of chars we can replace to make the entire string equal to the char having current max freq
+            while (r - l + 1) - maxFreq > k: 
+                hashMap[s[r]] -= 1
                 tempMaxFreq = 0
                 for value in hashMap.values(): # O(n)
-                    tempMaxFreq = max(tempMaxFreq, value) 
+                    tempMaxFreq = max(tempMaxFreq, value) # while shrinking we are re-calculating the max freq which is not needed
                 maxFreq = tempMaxFreq
                 l += 1
 
@@ -536,7 +540,7 @@ class Solution:
             hashMap[ord(s[r]) - ord('A')] = 1 + hashMap.get(ord(s[r]) - ord('A'), 0)
             maxFreq = max(maxFreq, hashMap[ord(s[r]) - ord('A')])
 
-            # make the window valid by shrinking -> ignore to decrease maxFreq -> dosen't affect ans
+            # make the window valid by shrinking -> ignore to decrease maxFreq -> dosen't affect ans -> answer will change only when maxFreq increases
             while (r - l + 1) - maxFreq > k:
                 hashMap[ord(s[l]) - ord('A')] -= 1
                 l += 1
@@ -554,22 +558,25 @@ class Solution:
 ```python
 class Solution:
     # METHOD 1: BRUTE FORCE: GEN ALL SUBARRAYS + running Sum
+    # intuition: for every subarray, if current sum > goal, break else if its equal to goal, add to count
     def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
         cnt = 0
         n = len(nums)
 
         for l in range(n):
-            runningSum = 0
+            Sum = 0
             for r in range(l, n):
-                runningSum += nums[r]
-                if runningSum == goal:
+                Sum += nums[r]
+                if Sum == goal:
                     cnt += 1
-                if runningSum > goal:
+                if Sum > goal:
                     break
         return cnt
 
 
     # method 2: better: presum + hashmap -> we can optimize this further as there are no -ve nos
+    # intuition: if there are z num of subarrays with a sum of x - k, there would be z num of subarrays with a sum of k
+    # works for all cases
     # time: O(n), space: O(n)
     def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
         n = len(nums)
@@ -590,6 +597,7 @@ class Solution:
 
 
     # method 3: optimal: sw + tp -> as there are no -ve nos
+    # pattern 3: count subarrays when sum == k (only positives)
     # time: O(2 * 2 *n) = O(n) but slower than method 2, space: O(1)
     def numSubarraysWithSum(self, nums: List[int], goal: int) -> int:
         
@@ -625,12 +633,12 @@ class Solution:
         n = len(nums)
 
         for l in range(n):
-            runningSum = 0
+            Sum = 0
             for r in range(l, n):
-                runningSum += nums[r] % 2
-                if runningSum == k:
+                Sum += nums[r] % 2
+                if Sum == k:
                     cnt += 1
-                if runningSum > k:
+                if Sum > k:
                     break
         return cnt
 
@@ -638,18 +646,18 @@ class Solution:
     # time: O(n), space: O(n)
     def numberOfSubarrays(self, nums: List[int], k: int) -> int:
         n = len(nums)
-        runningSum = 0
+        Sum = 0
         hashMap = {0: 1}
         cnt = 0
 
         for i in range(n):
-            runningSum += nums[i] % 2
+            Sum += nums[i] % 2
 
-            rem = runningSum - k
+            rem = Sum - k
             if rem in hashMap:
                 cnt += hashMap[rem]
             
-            hashMap[runningSum] = 1 + hashMap.get(runningSum, 0)
+            hashMap[Sum] = 1 + hashMap.get(Sum, 0)
 
         return cnt
 
@@ -662,14 +670,14 @@ class Solution:
         def numSubarraysSumLessThan(k):
             cnt = 0
             l, r = 0, 0
-            runningSum = 0
+            Sum = 0
             while r < n:
-                runningSum += nums[r] % 2
-                while l <= r and runningSum > k:
-                    runningSum -= nums[l] % 2
+                Sum += nums[r] % 2
+                while l <= r and Sum > k:
+                    Sum -= nums[l] % 2
                     l += 1
                 
-                if runningSum <= k:
+                if Sum <= k:
                     cnt += (r - l + 1)
                 
                 r += 1
@@ -687,46 +695,35 @@ class Solution:
     def subarraysWithKDistinct(self, nums: List[int], k: int) -> int:
         n = len(nums)
         cnt = 0
-
         for l in range(n):
-            
             hashMap = {}
-
             for r in range(l, n):
                 # update the hashmap
                 hashMap[nums[r]] = 1 + hashMap.get(nums[r], 0)
-                
                 if len(hashMap) == k:
                     cnt += 1
-
                 if len(hashMap) > k:
                     break
-
         return cnt        
 
     # method 2: better & optimal: sw + tp + hashMap as above + ((<= k) - (<= (k - 1))) = k trick
     def subarraysWithKDistinct(self, nums: List[int], k: int) -> int:
         n = len(nums)
 
-        def helper(K):
+        def helper(K): # gives the count of subarrays with sum <= K
             cnt = 0
             l, r = 0, 0
             hashMap = {}
-
             while r < n:
                 hashMap[nums[r]] = 1 + hashMap.get(nums[r], 0)
-
                 while len(hashMap) > K:
                     hashMap[nums[l]] -= 1
                     if hashMap[nums[l]] == 0:
                         del hashMap[nums[l]]
                     l += 1
-
                 if len(hashMap) <= K:
-                    cnt += (r - l + 1)
-                
+                    cnt += (r - l + 1)      
                 r += 1
-
             return cnt
 
         return helper(k) - helper(k - 1)
@@ -740,69 +737,100 @@ class Solution:
     def minWindow(self, s: str, t: str) -> str:
         n = len(s)
         m = len(t)
-        sIndex = -1
-        minLen = float("inf")
-
-        for l in range(n):
+        if n < m:
+            return ""
+        startIdx = -1
+        minLength = float("inf")
+        for i in range(n):
+            hashMap = defaultdict(int)
+            for j in range(m):
+                hashMap[t[j]] += 1
             cnt = 0
-            hashArray = [0] * 256
-            for i in range(m):
-                hashArray[ord(t[i]) - ord('A')] += 1
-            for r in range(l, n):
-                if hashArray[ord(s[r]) - ord('A')] > 0:
+            for j in range(i, n):
+                if hashMap[s[j]] > 0:
                     cnt += 1
-                hashArray[ord(s[r]) - ord('A')] -= 1
-
+                hashMap[s[j]] -= 1
                 if cnt == m:
-                    if (r - l + 1) < minLen:
-                        minLen = r - l + 1
-                        sIndex = l
-                        break
-        print(sIndex, minLen)
-        return s[sIndex:sIndex+minLen] if sIndex != -1 else ""
-
-
-
+                    if (j - i + 1) < minLength:
+                        minLength = (j - i + 1)
+                        startIdx = i
+                    break
+        print(startIdx, minLength)
+        if startIdx != -1:
+            return s[startIdx:startIdx + minLength]
+        else:
+            return ""
 
     # method 2: Better & optimal: SW + TP + 2 hashMaps + smart way to figure out valid window condition
     # time: O(n) 
     def minWindow(self, s: str, t: str) -> str:
-        n = len(s)
-        m = len(t)
-        hashArray = [0] * 256
-        cnt = 0
-        sIndex = -1
-        minLen = float("inf")
-
-        for i in range(m):
-            hashArray[ord(t[i]) - ord('A')] += 1
+        n, m = len(s), len(t)
+        hashMap = defaultdict(int)
+        for c in t:
+            hashMap[c] += 1
         
+        startIdx = -1
+        minLength = float("inf")
+        
+        cnt = 0
         l, r = 0, 0
-
         while r < n:
-            # check if there was a previous entry for this char entered by string 't'
-            if hashArray[ord(s[r]) - ord('A')] > 0:
+            if hashMap[s[r]] > 0:
                 cnt += 1
             
-            # decrease the frequency of this char
-            hashArray[ord(s[r]) - ord('A')] -= 1
+            hashMap[s[r]] -= 1
 
-            # keep on trying to shrink the window until its is valid for smaller window 
-            # -> keep on calculating minLen and sIndex and updating the hashArray
-            while l <= r and cnt == m:
-                if (r - l + 1) < minLen:
-                    minLen = r - l + 1
-                    sIndex = l
-                if hashArray[ord(s[l]) - ord('A')] == 0: # this means the window is loosing this char inside it -> reinsertion in the common hashArray
+            # while cnt == length of t:
+            # we can update the minLength, startIdx and shrink the window and check and update again
+            while cnt == m: 
+                if (r - l + 1) < minLength:
+                    minLength = (r - l + 1)
+                    startIdx = l
+                hashMap[s[l]] += 1
+                if hashMap[s[l]] > 0:
                     cnt -= 1
-                # shrink window for search of a shorter one -> add to the char's freq
-                hashArray[ord(s[l]) - ord('A')] += 1
                 l += 1
             
             r += 1
-        print(sIndex, minLen)
-        return s[sIndex:sIndex+minLen] if sIndex != -1 else ""
+        
+        if startIdx != -1:
+            return s[startIdx: startIdx + minLength]
+        else:
+            return ""
+```
 
+### Leetcode: Subarray product less than k
+```python
+class Solution:
+    # def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
+    #     n = len(nums)
+    #     cnt = 0
+    #     for i in range(n):
+    #         prod = 1
+    #         for j in range(i, n):
+    #             prod *= nums[j]
+    #             if prod < k:
+    #                 cnt += 1
+    #             if prod >= k:
+    #                 break
+    #     return cnt
 
+    def numSubarrayProductLessThanK(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        
+        l, r = 0, 0
+        cnt = 0
+        prod = 1
+        while r < n:
+            prod *= nums[r]
 
+            while l <= r and prod >= k:
+                prod /= nums[l]
+                l += 1
+            
+            if prod < k:
+                cnt += (r - l + 1)
+            
+            r += 1
+        return cnt
 ```
