@@ -15,9 +15,9 @@
     * min. of all possible stuffs
     * max. of all possible stuffs, etc.
 
-### General Pattern for 1D - DP Problems
+## General Pattern for 1D - DP Problems
 
-Question | DP - 3 | Frog Jump
+### Question | DP - 3 | Frog Jump
 
 ```python
 from os import *
@@ -100,94 +100,191 @@ def frogJump(n: int, heights: List[int]) -> int:
     return prev1
 ```
 ### Question extension: Frog Jump | K jumps allowed
-
+https://www.geeksforgeeks.org/problems/minimal-cost/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=minimal-cost
 ```python
+class Solution:
+    # recursion
+    def minimizeCost(self, height, n, k):
+        def f(i):
+            # base case
+            if i == 0:
+                return 0
+            
+            mini = float("inf")
+            for j in range(1, k + 1):
+                if i - j >= 0:
+                    energy = f(i - j) + abs(height[i] - height[i - j])
+                    mini = min(mini, energy)
+            return mini
+        
+        return f(n - 1)
+    
+    # Memoization
+    def minimizeCost(self, height, n, k):
+        def f(i):
+            # base case
+            if i == 0:
+                return 0
+            if dp[i] != -1:
+                return dp[i]
+            
+            # gen case
+            mini = float("inf")
+            for j in range(1, k + 1):
+                if i - j >= 0:
+                    energy = f(i - j) + abs(height[i] - height[i - j])
+                    mini = min(mini, energy)
+            dp[i] = mini
+            return dp[i]
+        dp = [-1] * n
+        return f(n - 1)
+    
+    # Tabulation
+    def minimizeCost(self, height, n, k):
+        dp = [0] * n
+        
+        # base case
+        dp[0] = 0
+        
+        # gen case
+        for i in range(1, n):
+            mini = float("inf")
+            for j in range(1, k + 1):
+                if i - j >= 0:
+                    energy = dp[i - j] + abs(height[i] - height[i - j])
+                    mini = min(mini, energy)
+            dp[i] = mini
+            
+        return dp[n - 1]
+
 
 ```
 ### Maximum sum of non-adjacent elements | House Robber 1
+
 ```python
+'''
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that adjacent houses have security systems connected and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3,1]
+Output: 4
+Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+Total amount you can rob = 1 + 3 = 4.
+Example 2:
+
+Input: nums = [2,7,9,3,1]
+Output: 12
+Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 5 (money = 1).
+Total amount you can rob = 2 + 9 + 1 = 12.
+ 
+
+Constraints:
+
+1 <= nums.length <= 100
+0 <= nums[i] <= 400
+'''
+
 # Simple recursion
 def maximumNonAdjacentSum(nums):    
-    
     def dfs(i):
         if i == 0:
             return nums[i]
         if i < 0:
             return 0
-
         # pick and not pick
         pick = nums[i] + dfs(i - 2)
         notPick = 0 + dfs(i - 1)
-    
         return max(pick, notPick)
-
     return dfs(len(nums) - 1)
 
 # Memoization
 def maximumNonAdjacentSum(nums):    
-    
     def dfs(i):
         if i == 0:
             return nums[i]
         if i < 0:
-            return 0
-        
+            return 0 
         if dp[i] != -1:
             return dp[i]
-
         # pick and not pick
         pick = nums[i] + dfs(i - 2)
         notPick = 0 + dfs(i - 1)
-
         dp[i] = max(pick, notPick)
-        
         return dp[i]
-
     n = len(nums)
     dp = [-1] * n
     return dfs(n - 1)
 
 # Tabulation
 def maximumNonAdjacentSum(nums):    
-
     n = len(nums)
     dp = [0] * n
     dp[0] = nums[0]
-
     for i in range(1, n):
         pick = nums[i] + dp[i - 2]
         notPick = 0 + dp[i - 1]
-
         dp[i] = max(dp[i], max(pick, notPick))
-
-
     return dp[n - 1]
 
 # Tabulation: space optimized
 def maximumNonAdjacentSum(nums):    
-
     n = len(nums)
     # dp = [0] * n
+    #    0  1  2  3  4  5
+    #            p2 p2  c
+    #    p2 p1 c
+    # p2 p1 c
     prev1 = nums[0]
     prev2 = 0
-
     curi = 0
     for i in range(1, n):
         pick = nums[i]
         if i > 1:
             pick += prev2
         notPick = 0 + prev1
-
         curi = max(curi, max(pick, notPick))
         prev2 = prev1
         prev1 = curi
-
-
     return prev1
 
 ```
 ### House Robber 2
 ```python
+'''
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. All houses at this place are arranged in a circle. That means the first house is the neighbor of the last one. Meanwhile, adjacent houses have a security system connected, and it will automatically contact the police if two adjacent houses were broken into on the same night.
+
+Given an integer array nums representing the amount of money of each house, return the maximum amount of money you can rob tonight without alerting the police.
+
+ 
+
+Example 1:
+
+Input: nums = [2,3,2]
+Output: 3
+Explanation: You cannot rob house 1 (money = 2) and then rob house 3 (money = 2), because they are adjacent houses.
+Example 2:
+
+Input: nums = [1,2,3,1]
+Output: 4
+Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+Total amount you can rob = 1 + 3 = 4.
+Example 3:
+
+Input: nums = [1,2,3]
+Output: 3
+ 
+
+Constraints:
+
+1 <= nums.length <= 100
+0 <= nums[i] <= 1000
+'''
+
 def houseRobber(valueInHouse):
     
     def houseRobber1(nums):
@@ -275,196 +372,175 @@ class Solution:
 ### Ninja's Training
 
 ```python
+'''
+Geek is going for n day training program. He can perform any one of these three activities Running, Fighting, and Learning Practice. Each activity has some point on each day. As Geek wants to improve all his skills, he can't do the same activity on two consecutive days. Help Geek to maximize his merit points as you are given a 2D array of points points, corresponding to each day and activity.
 
-# Recursion from i = 0 to n - 1
-def maximumPoints(self, points, n):
-        def f(i, prevTask):
-            if i == n - 1:
-                maxi = float("-inf")
-                for curTask in range(3):
-                    if curTask == prevTask:
-                        continue
-                    maxi = max(maxi, points[i][curTask]) 
-                return maxi
-            
-            # general case
-            maxi = float("-inf")
-            for curTask in range(3):
-                if curTask == prevTask:
-                    continue
-                total = points[i][curTask] + f(i + 1, curTask)
-                maxi = max(maxi, total)
-            
-            return maxi
-        
-        return f(0, -1)
-                
-    def maximumPoints(self, points, n):
-        def f(i, prevTask):
-            
-            if i == n - 1:
-                maxi = 0
-                for curTask in range(3):
-                    if curTask != prevTask:
-                        maxi = max(maxi, points[i][curTask]) 
-                return maxi
-                
-            if dp[i][prevTask] != -1:
-                return dp[i][prevTask]
-            
-            # general case
-            maxi = 0
-            for curTask in range(3):
-                if curTask != prevTask:
-                    total = points[i][curTask] + f(i + 1, curTask)
-                    maxi = max(maxi, total)
-            
-            dp[i][prevTask] = maxi
-            return dp[i][prevTask]
-        
-        dp = [[-1] * 4 for _ in range(n)]
-        return f(0, 3)
-            
+Example:
+Input:
+n = 3
+points = [[1,2,5],[3,1,1],[3,3,3]]
+Output:
+11
+Explanation:
+Geek will learn a new move and earn 5 point then on second
+day he will do running and earn 3 point and on third day
+he will do fighting and earn 3 points so, maximum point is 11.
+
+Example:
+Input:
+n = 3
+points = [[1,2,5],[3,1,1],[3,2,3]]
+Output:
+11
+Explanation:
+Geek will learn a new move and earn 5 point then on second
+day he will do running and earn 3 point and on third day
+he will do running and earn 3 points so, maximum point is 11.
+Your Task:
+You don't have to read input or print anything. Your task is to complete the function maximumPoints() which takes the integer n and a 2D array points and returns the maximum points he can earn.
+
+Expected Time Complexity: O(3*n)
+Expected Space Complexity: O(3*n)
+
+Constraint:
+1 <=  n <= 105
+1 <=  point[i] <= 100
+'''
+
+#User function Template for python3
+
+class Solution:
+    # Recursion
     def maximumPoints(self, points, n):
         
-        dp = [[0] * 4 for _ in range(n)]
-        
-        dp[n - 1][0] = max(points[n - 1][1], points[n - 1][2])
-        dp[n - 1][1] = max(points[n - 1][0], points[n - 1][2])
-        dp[n - 1][2] = max(points[n - 1][0], points[n - 1][1])
-        dp[n - 1][3] = max(points[n - 1][0], points[n - 1][1], points[n - 1][2])
-        
-        for i in range(n - 2, -1, -1):
-            for prevTask in range(4):
+        def f(day, nextDayTask):
+            # base case
+            if day == 0:
                 maxi = 0
-                for curTask in range(3):
-                    if curTask != prevTask:
-                        total = points[i][curTask] + dp[i + 1][curTask]
-                        maxi = max(maxi, total)
-                        
-                dp[i][prevTask] = maxi
-        
-        return dp[0][3]
-
-
-# Recursion from n - 1 to 0
-
-# simple recursion
-def ninjaTraining(n: int, points: List[List[int]]) -> int:
-
-    def dfs(day, nextDayTask):
-        # base case
-        if day == 0:
+                for task in range(3):
+                    if task != nextDayTask:
+                        maxi = max(maxi, points[day][task])
+                return maxi
+            
+            # gen case
             maxi = 0
             for task in range(3):
                 if task != nextDayTask:
-                    maxi = max(maxi, points[0][task])
+                    score = points[day][task] + f(day - 1, task)
+                    maxi = max(maxi, score)
             return maxi
+            
+        return f(n - 1, 3)
+    
+    # Memoization
+    def maximumPoints(self, points, n):
         
-        # general case
-        maxi = 0
-        for task in range(3):
-            if task != nextDayTask:
-                maxi = max(maxi, points[day][task] + dfs(day - 1, task))
-        
-        return maxi
-
-    return dfs(n - 1, 3)
-
-# memoization
-def ninjaTraining(n: int, points: List[List[int]]) -> int:
-
-    def dfs(day, nextDayTask):
-        # base case
-        if day == 0:
+        def f(day, nextDayTask):
+            # base case
+            if day == 0:
+                maxi = 0
+                for task in range(3):
+                    if task != nextDayTask:
+                        maxi = max(maxi, points[day][task])
+                return maxi
+                
+            if dp[day][nextDayTask] != -1:
+                return dp[day][nextDayTask]
+            
+            # gen case
             maxi = 0
             for task in range(3):
                 if task != nextDayTask:
-                    maxi = max(maxi, points[0][task])
-            return maxi
-        
-        # memoization:
-        if dp[day][nextDayTask] != -1:
+                    score = points[day][task] + f(day - 1, task)
+                    maxi = max(maxi, score)
+            dp[day][nextDayTask] = maxi
             return dp[day][nextDayTask]
-
-        # general case
-        maxi = 0
-        for task in range(3):
-            if task != nextDayTask:
-                maxi = max(maxi, points[day][task] + dfs(day - 1, task))
+            
+        dp = [[-1] * 4 for _ in range(n)]
+        return f(n - 1, 3)
+    
+    # Tabulation
+    def maximumPoints(self, points, n):
+            
+        dp = [[0] * 4 for _ in range(n)]
+        # day == 0:
+        # means next day task 0 was performed, hence we cannot perform
+        # task 1 or 2(remember total we have 0, 1, 2 ie. 3 tasks)
+        dp[0][0] = max(points[0][1], points[0][2])
+        dp[0][1] = max(points[0][0], points[0][2])
+        dp[0][2] = max(points[0][0], points[0][1])
+        dp[0][3] = max(points[0][0], points[0][1], points[0][2])
         
-        dp[day][nextDayTask] = maxi
+        for day in range(1, n):
+            for nextDayTask in range(4):
+                maxi = 0
+                for task in range(3):
+                    if task != nextDayTask:
+                        score = points[day][task] + dp[day - 1][task]
+                        maxi = max(maxi, score)
+                    dp[day][nextDayTask] = maxi
 
-        return maxi
+        return dp[n - 1][3]
+        
+    # Tabulation: space optimization
+    def maximumPoints(self, points, n):
+        prev = [0] * 4
+        cur = [0] * 4
+        # day == 0:
+        # means next day task 0 was performed, hence we cannot perform
+        # task 1 or 2(remember total we have 0, 1, 2 ie. 3 tasks)
+        prev[0] = max(points[0][1], points[0][2])
+        prev[1] = max(points[0][0], points[0][2])
+        prev[2] = max(points[0][0], points[0][1])
+        prev[3] = max(points[0][0], points[0][1], points[0][2])
+        
+        for day in range(1, n):
+            for nextDayTask in range(4):
+                maxi = 0
+                for task in range(3):
+                    if task != nextDayTask:
+                        score = points[day][task] + prev[task]
+                        maxi = max(maxi, score)
+                    cur[nextDayTask] = maxi
+            prev = cur.copy()
 
-    dp = [[-1] * 4 for _ in range(n)]
-    
-    dfs(n - 1, 3)
-
-    return dp[n - 1][3]
-
-
-
-# tabulation
-def ninjaTraining(n: int, points: List[List[int]]) -> int:
-    
-    # step 1: initialize dp array
-    dp = [[0] * 4 for _ in range(n)]
-
-    # step 2: fill the base case cells
-    dp[0][0] = max(points[0][1], points[0][2])
-    dp[0][1] = max(points[0][0], points[0][2])
-    dp[0][2] = max(points[0][0], points[0][1])
-    dp[0][3] = max(points[0][0], points[0][1], points[0][2])
-
-    # step 3: fill the rest of the 2D array bottom up
-    for day in range(1, n): # 1 -> n - 1
-        for nextDayTask in range(4): # 0 -> 3
-            dp[day][nextDayTask] = 0
-
-            for task in range(3): # 0 -> 2
-                if task != nextDayTask: # the task 'task' can be thus performed!
-                    pointsEarnedCurrentDay = points[day][task] + dp[day - 1][task] # for prev day, current day's task ie. 'task' will be its nextDayTask
-                    dp[day][nextDayTask] = max(dp[day][nextDayTask], pointsEarnedCurrentDay)
-                    
-    return dp[n - 1][3]
-
-
-# tabulation -> space optimized
-def ninjaTraining(n: int, points: List[List[int]]) -> int:
-    
-    # step 1: initialize dp array
-    dp = [0] * 4
-
-    # step 2: fill the base case cells -> dp represents the prev day or 'day - 1'
-    dp[0] = max(points[0][1], points[0][2])
-    dp[1] = max(points[0][0], points[0][2])
-    dp[2] = max(points[0][0], points[0][1])
-    dp[3] = max(points[0][0], points[0][1], points[0][2])
-
-    # step 3: fill the rest of the 2D array bottom up
-    for day in range(1, n): # 1 -> n - 1
-        tempDP = [0] * 4 # tempDP represents the current day
-        for nextDayTask in range(4): # 0 -> 3
-            tempDP[nextDayTask] = 0
-
-            for task in range(3): # 0 -> 2
-                if task != nextDayTask: # the task 'task' can be thus performed!
-                    pointsEarnedCurrentDay = points[day][task] + dp[task] # for prev day, current day's task ie. 'task' will be its nextDayTask
-                    tempDP[nextDayTask] = max(tempDP[nextDayTask], pointsEarnedCurrentDay)
-        dp = tempDP.copy()
-
-    return dp[3]
+        return prev[3]
 
 ```
 
 # DP on GRIDS
 
 ## Template for Grid based problems
-
 ### DP 08: Grid unique paths
 
 ```python
+'''
+There is a robot on an m x n grid. The robot is initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
+
+Given the two integers m and n, return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+The test cases are generated so that the answer will be less than or equal to 2 * 109.
+
+ 
+
+Example 1:
+
+
+Input: m = 3, n = 7
+Output: 28
+Example 2:
+
+Input: m = 3, n = 2
+Output: 3
+Explanation: From the top-left corner, there are a total of 3 ways to reach the bottom-right corner:
+1. Right -> Down -> Down
+2. Down -> Down -> Right
+3. Down -> Right -> Down
+
+Constraints:
+
+1 <= m, n <= 100
+'''
 
 def uniquePaths(m, n):
 	def f(i, j):
@@ -550,7 +626,40 @@ def uniquePaths(m, n):
 ### DP 09: Unique Paths II
 
 ```python
+'''
+You are given an m x n integer array grid. There is a robot initially located at the top-left corner (i.e., grid[0][0]). The robot tries to move to the bottom-right corner (i.e., grid[m - 1][n - 1]). The robot can only move either down or right at any point in time.
 
+An obstacle and space are marked as 1 or 0 respectively in grid. A path that the robot takes cannot include any square that is an obstacle.
+
+Return the number of possible unique paths that the robot can take to reach the bottom-right corner.
+
+The testcases are generated so that the answer will be less than or equal to 2 * 109.
+
+ 
+
+Example 1:
+
+
+Input: obstacleGrid = [[0,0,0],[0,1,0],[0,0,0]]
+Output: 2
+Explanation: There is one obstacle in the middle of the 3x3 grid above.
+There are two ways to reach the bottom-right corner:
+1. Right -> Right -> Down -> Down
+2. Down -> Down -> Right -> Right
+Example 2:
+
+
+Input: obstacleGrid = [[0,1],[0,0]]
+Output: 1
+ 
+
+Constraints:
+
+m == obstacleGrid.length
+n == obstacleGrid[i].length
+1 <= m, n <= 100
+obstacleGrid[i][j] is 0 or 1.
+'''
 def mazeObstacles(n, m, mat):
     
     modulo = 10**9 + 7
@@ -577,6 +686,32 @@ def mazeObstacles(n, m, mat):
 ### DP 10: Minimum path sum in grid: Fixed start and fixed ending
 
 ```python
+'''
+Given a m x n grid filled with non-negative numbers, find a path from top left to bottom right, which minimizes the sum of all numbers along its path.
+
+Note: You can only move either down or right at any point in time.
+
+ 
+
+Example 1:
+
+
+Input: grid = [[1,3,1],[1,5,1],[4,2,1]]
+Output: 7
+Explanation: Because the path 1 → 3 → 1 → 1 → 1 minimizes the sum.
+Example 2:
+
+Input: grid = [[1,2,3],[4,5,6]]
+Output: 12
+ 
+
+Constraints:
+
+m == grid.length
+n == grid[i].length
+1 <= m, n <= 200
+0 <= grid[i][j] <= 200
+'''
 
 # recurrance relation
 def minSumPath(grid):
@@ -702,6 +837,39 @@ def minSumPath(grid):
 ### DP 11: Triangle: Fixed starting and variable ending points
 
 ```python
+'''
+Given a triangle array, return the minimum path sum from top to bottom.
+
+For each step, you may move to an adjacent number of the row below. More formally, if you are on index i on the current row, you may move to either index i or index i + 1 on the next row.
+
+ 
+
+Example 1:
+
+Input: triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+Output: 11
+Explanation: The triangle looks like:
+   2
+  3 4
+ 6 5 7
+4 1 8 3
+The minimum path sum from top to bottom is 2 + 3 + 5 + 1 = 11 (underlined above).
+Example 2:
+
+Input: triangle = [[-10]]
+Output: -10
+ 
+
+Constraints:
+
+1 <= triangle.length <= 200
+triangle[0].length == 1
+triangle[i].length == triangle[i - 1].length + 1
+-104 <= triangle[i][j] <= 104
+ 
+
+Follow up: Could you do this using only O(n) extra space, where n is the total number of rows in the triangle?
+'''
 # recurrance relation
 def minimumPathSum(triangle, n):
 
@@ -765,7 +933,7 @@ def minimumPathSum(triangle, n):
     
     return dp[0][0]
 ```
-### DP 12: Maximum Path sum in the matrix | variable startng and variable ending points
+### DP 12: Minimum/Maximum Falling Path sum in the matrix | variable startng and variable ending points
 
 ```python
 def getMaxPathSum(matrix):
@@ -1253,7 +1421,6 @@ def countPartitions(n: int, d: int, arr: List[int]) -> int:
     return findWays(arr, newTarget // 2)
 
 ```
-
 ## General structure of 0 / 1 knapsack type of problems - VVI for interviews
 
 ### DP 19: 0 / 1 Knapsack
@@ -1384,114 +1551,114 @@ for t in range(T):
 ```python
 
 class Solution:
-    # def coinChange(self, coins: List[int], amount: int) -> int:
-    #     n = len(coins)
-    #     def f(i, target):
-    #         # base cases
-    #         if i == 0:
-    #             if target % coins[0] == 0:
-    #                 return target // coins[0]
-    #             else:
-    #                 return -1
-    #         if target == 0:
-    #             return 0
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        n = len(coins)
+        def f(i, target):
+            # base cases
+            if i == 0:
+                if target % coins[0] == 0:
+                    return target // coins[0]
+                else:
+                    return -1
+            if target == 0:
+                return 0
         
-    #         # gen case
-    #         notTake = 0 + f(i - 1, target)
-    #         take = float("inf")
-    #         if coins[i] <= target:
-    #             take = 1 + f(i, target - coins[i])
+            # gen case
+            notTake = 0 + f(i - 1, target)
+            take = float("inf")
+            if coins[i] <= target:
+                take = 1 + f(i, target - coins[i])
             
-    #         return min(take, notTake)
+            return min(take, notTake)
         
-    #     return f(n - 1, amount)
+        return f(n - 1, amount)
 
-    # def coinChange(self, coins: List[int], amount: int) -> int:
-    #     n = len(coins)
-    #     def f(i, target):
-    #         # base cases
-    #         if dp[i][target] != -1:
-    #             return dp[i][target]
-    #         if i == 0:
-    #             if target % coins[0] == 0:
-    #                 return target // coins[0]
-    #             else:
-    #                 return -1
-    #         if target == 0:
-    #             return 0
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        n = len(coins)
+        def f(i, target):
+            # base cases
+            if dp[i][target] != -1:
+                return dp[i][target]
+            if i == 0:
+                if target % coins[0] == 0:
+                    return target // coins[0]
+                else:
+                    return -1
+            if target == 0:
+                return 0
         
-    #         # gen case
-    #         notTake = 0 + f(i - 1, target)
-    #         take = float("inf")
-    #         if coins[i] <= target:
-    #             take = 1 + f(i, target - coins[i])
+            # gen case
+            notTake = 0 + f(i - 1, target)
+            take = float("inf")
+            if coins[i] <= target:
+                take = 1 + f(i, target - coins[i])
             
-    #         dp[i][target] = min(take, notTake)
-    #         return dp[i][target]
+            dp[i][target] = min(take, notTake)
+            return dp[i][target]
 
-    #     dp = [[-1] * (amount + 1) for _ in range(n)]
-    #     return f(n - 1, amount)
+        dp = [[-1] * (amount + 1) for _ in range(n)]
+        return f(n - 1, amount)
 
-    # def coinChange(self, coins: List[int], amount: int) -> int:
-    #     n = len(coins)
-    #     def f(i, target):
-    #         # base cases
-    #         if dp[i][target] != -1:
-    #             return dp[i][target]
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        n = len(coins)
+        def f(i, target):
+            # base cases
+            if dp[i][target] != -1:
+                return dp[i][target]
 
-    #         if i == 0:
-    #             if target % coins[0] == 0:
-    #                 return target // coins[0]
-    #             else:
-    #                 return float("inf")
+            if i == 0:
+                if target % coins[0] == 0:
+                    return target // coins[0]
+                else:
+                    return float("inf")
         
-    #         # gen case
-    #         notTake = 0 + f(i - 1, target)
-    #         take = float("inf")
-    #         if coins[i] <= target:
-    #             take = 1 + f(i, target - coins[i])
+            # gen case
+            notTake = 0 + f(i - 1, target)
+            take = float("inf")
+            if coins[i] <= target:
+                take = 1 + f(i, target - coins[i])
             
-    #         dp[i][target] = min(take, notTake)
+            dp[i][target] = min(take, notTake)
 
-    #         return dp[i][target]
+            return dp[i][target]
             
-    #     dp = [[-1] * (amount + 1) for _ in range(n)]
+        dp = [[-1] * (amount + 1) for _ in range(n)]
         
-    #     res = f(n - 1, amount)
+        res = f(n - 1, amount)
         
-    #     if res == float("inf"):
-    #         return -1
-    #     else:
-    #         return res
+        if res == float("inf"):
+            return -1
+        else:
+            return res
 
-    # def coinChange(self, coins: List[int], amount: int) -> int:
-    #     n = len(coins)
-    #     dp = [[0] * (amount + 1) for _ in range(n)]
-    #     # base cases
-    #     # i == 0
-    #     for target in range(1, amount + 1):
-    #         # if target < coins[0]:
-    #         #     dp[0][target] = float("inf")
-    #         #     continue
-    #         if target % coins[0]:
-    #             dp[0][target] = float("inf")
-    #             continue
-    #         dp[0][target] = target // coins[0]
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        n = len(coins)
+        dp = [[0] * (amount + 1) for _ in range(n)]
+        # base cases
+        # i == 0
+        for target in range(1, amount + 1):
+            # if target < coins[0]:
+            #     dp[0][target] = float("inf")
+            #     continue
+            if target % coins[0]:
+                dp[0][target] = float("inf")
+                continue
+            dp[0][target] = target // coins[0]
 
-    #     # gen case
-    #     for i in range(1, n):
-    #         for target in range(1, amount + 1):
-    #             # gen case
-    #             notTake = 0 + dp[i - 1][target]
-    #             take = float("inf")
-    #             if coins[i] <= target:
-    #                 take = 1 + dp[i][target - coins[i]]
-    #             dp[i][target] = min(take, notTake)
-    #     res = dp[n - 1][amount]
-    #     if res == float("inf"):
-    #         return -1
-    #     else:
-    #         return res
+        # gen case
+        for i in range(1, n):
+            for target in range(1, amount + 1):
+                # gen case
+                notTake = 0 + dp[i - 1][target]
+                take = float("inf")
+                if coins[i] <= target:
+                    take = 1 + dp[i][target - coins[i]]
+                dp[i][target] = min(take, notTake)
+        res = dp[n - 1][amount]
+        if res == float("inf"):
+            return -1
+        else:
+            return res
 
     def coinChange(self, coins: List[int], amount: int) -> int:
         n = len(coins)

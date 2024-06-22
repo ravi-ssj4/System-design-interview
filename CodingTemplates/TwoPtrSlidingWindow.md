@@ -834,3 +834,234 @@ class Solution:
             r += 1
         return cnt
 ```
+
+### Leetcode: https://leetcode.com/problems/length-of-longest-subarray-with-at-most-k-frequency/description/
+
+```python
+class Solution:
+    # def maxSubarrayLength(self, nums: List[int], k: int) -> int:
+    #     # brute force
+
+    #     maxi = 0
+    #     n = len(nums)
+    #     for i in range(n):
+    #         hashMap = defaultdict(int)
+    #         for j in range(i, n):
+    #             hashMap[nums[j]] += 1
+    #             if hashMap[nums[j]] > k:
+    #                 break
+                
+    #             maxi = max(maxi, j - i + 1)
+    #     return maxi
+
+    def maxSubarrayLength(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        l, r = 0, 0
+        hashMap = defaultdict(int)
+        maxi = 0
+        while r < n:
+            hashMap[nums[r]] += 1
+            
+            while l <= r and hashMap[nums[r]] > k:
+                hashMap[nums[l]] -= 1
+                l += 1
+            
+            maxi = max(maxi, r - l + 1)
+
+            r += 1
+        
+        return maxi
+                    
+```
+
+### Leetcode HARD: https://leetcode.com/problems/length-of-the-longest-valid-substring/description/
+
+```python
+class Solution:
+    # def longestValidSubstring(self, word: str, forbidden: List[str]) -> int:
+    #     n = len(word)
+    #     maxi = float("-inf")
+    #     for i in range(n): # O(n)
+    #         for j in range(i, n): # O(n)
+    #             # current substr
+    #             curWord = word[i:j + 1]
+    #             print(curWord)
+    #             present = False
+    #             for w in forbidden: # O(m)
+    #                 if w in curWord: # O(10)
+    #                     present = True
+    #                     break
+    #             if present == True:
+    #                 break
+    #             else:
+    #                 maxi = max(maxi, j - i + 1)
+    #     return maxi
+    
+    def longestValidSubstring(self, word: str, forbidden: List[str]) -> int:
+        # we will find all the substrings that are forbidden
+        n = len(word)
+        cnt = 0
+        l, r = 0, 0
+        curStr = collections.deque()
+        forbiddenSet = set(forbidden)
+        maxi = float("-inf")
+        
+        def invalid():
+            curS = ""
+            for i in range(len(curStr) - 1, -1, -1):
+                curS = curStr[i] + curS
+                if curS in forbiddenSet:
+                    return True
+            return False
+                
+        while r < n:
+            curStr.append(word[r])
+
+            
+            while invalid():
+                curStr.popleft()
+                l += 1
+            
+            maxi = max(maxi, r - l + 1)
+
+            r += 1
+
+        return maxi
+
+
+
+```
+
+### Leetcode Medium: https://leetcode.com/problems/count-subarrays-where-max-element-appears-at-least-k-times/
+```python
+class Solution:
+    # def countSubarrays(self, nums: List[int], k: int) -> int:
+    #     # brute force
+    #     n = len(nums)
+    #     maxi = max(nums)
+    #     res = 0
+    #     for i in range(n):
+    #         countMaxi = 0
+    #         for j in range(i, n):
+    #             if nums[j] == maxi:
+    #                 countMaxi += 1
+                
+    #             if countMaxi >= k:
+    #                 res += (n - j)
+    #                 break
+    #     return res
+
+
+    def countSubarrays(self, nums: List[int], k: int) -> int:
+        # two pointer sliding window
+        n = len(nums)
+        l, r = 0, 0
+        maxi = max(nums)
+        countMaxi = 0
+        res = 0
+        while r < n:
+            if nums[r] == maxi:
+                countMaxi += 1
+            
+            while l <= r and countMaxi >= k:
+                res += (n - r)
+                if nums[l] == maxi:
+                    countMaxi -= 1
+                l += 1
+            r += 1
+        
+        return res
+
+```
+### Leetcode: https://leetcode.com/problems/repeated-dna-sequences/description/
+```python
+class Solution:
+    def findRepeatedDnaSequences(self, s: str) -> List[str]:
+        if len(s) < 10:
+            return []
+        
+        l, r = 0, 9
+        n = len(s)
+        dnaSet = set()
+        res = []
+        while r < n:
+            if s[l:r + 1] in dnaSet:
+                res.append(s[l:r + 1])
+            else:
+                dnaSet.add(s[l:r + 1])
+            l += 1
+            r += 1
+
+        return set(res)
+```
+### Leetcode: https://leetcode.com/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/description/
+```python
+class Solution:
+    # def longestSubarray(self, nums: List[int], limit: int) -> int:
+    #     n = len(nums)
+    #     maxi = 0
+
+    #     for i in range(n):
+    #         count = 0
+    #         maxx = nums[i]
+    #         minn = nums[i]
+    #         for j in range(i, n):
+    #             if abs(nums[j] - maxx) <= limit and abs(nums[j] - minn) <= limit:
+    #                 count += 1
+    #                 maxi = max(maxi, count)
+    #                 maxx = max(maxx, nums[j])
+    #                 minn = min(minn, nums[j])
+    #             else:
+    #                 break
+    #     return maxi
+    
+    def longestSubarray(self, nums: List[int], limit: int) -> int:
+        n = len(nums)
+        l, r = 0, 0
+        minQ = deque()
+        maxQ = deque()
+        maxi = 0
+        while r < n:
+            while minQ and nums[r] < nums[minQ[0]]:
+                minQ.popleft()
+            minQ.append(r)
+            
+            while maxQ and nums[r] > nums[maxQ[0]]:
+                maxQ.popleft()
+            maxQ.append(r)
+
+            print(l, r, nums[l], nums[r])
+            if minQ and maxQ:
+                print(minQ[0], maxQ[0])
+
+            while l <= r and minQ and maxQ and abs(nums[minQ[0]] - nums[maxQ[0]]) > limit:
+                l += 1
+                if l <= r:
+                    while minQ and minQ[0] <= l:
+                        minQ.popleft()
+                    while maxQ and maxQ[0] <= l:
+                        maxQ.popleft()
+            # print(minQ[0], maxQ[0])
+            print(l, r, nums[l], nums[r])
+            maxi = max(maxi, r - l + 1)
+
+            print(l, r, maxi)
+            r += 1
+        return maxi
+```
+### Leetcode
+```python
+
+```
+### Leetcode
+```python
+
+```
+### Leetcode
+```python
+
+```
+### Leetcode
+```python
+
+```

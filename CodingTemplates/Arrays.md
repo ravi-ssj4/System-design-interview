@@ -145,12 +145,12 @@ class Solution:
     # the missing number does not have a pair, so missing num ^ 0 = missing number
     def missingNumber(self, nums: List[int]) -> int:
         n = len(nums)
-        res = 0
+        missing = 0
         for i in range(n + 1):
-            res ^= i
-            if i < n:
-                res ^= nums[i] 
-        return res 
+            missing = missing ^ i # for the range
+            if i != n: # for the array elements
+                missing = missing ^ nums[i]
+        return missing
 ```
 
 ### L3 | Every num appears twice but 1 num appears once. find that num
@@ -190,10 +190,10 @@ class Solution:
     # time: O(n)
     # space: O(1)
     def singleNumber(self, nums: List[int]) -> int:
-        res = 0
-        for num in nums:
-            res ^= num
-        return res
+        missing = 0
+        for n in nums:
+            missing = missing ^ n
+        return missing
 ```
 
 ### L3 | Maximum consecutive 1s
@@ -202,12 +202,12 @@ class Solution:
     def findMaxConsecutiveOnes(self, nums: List[int]) -> int:
         cnt = 0
         maxi = 0
-        for num in nums:
-            if num == 1:
+        for n in nums:
+            if n == 0:
+                cnt = 0
+            else:
                 cnt += 1
                 maxi = max(maxi, cnt)
-            else:
-                cnt = 0
         return maxi
 ```
 ### L4 | Maximum Size Subarray Sum Equals k
@@ -355,6 +355,33 @@ def sortArray(arr, n):
 
 ### L7 - Majority Element I
 ```python
+'''
+Given an array nums of size n, return the majority element.
+
+The majority element is the element that appears more than ⌊n / 2⌋ times. You may assume that the majority element always exists in the array.
+
+ 
+
+Example 1:
+
+Input: nums = [3,2,3]
+Output: 3
+Example 2:
+
+Input: nums = [2,2,1,1,1,2,2]
+Output: 2
+ 
+
+Constraints:
+
+n == nums.length
+1 <= n <= 5 * 104
+-109 <= nums[i] <= 109
+ 
+
+Follow-up: Could you solve the problem in linear time and in O(1) space?
+'''
+
 # Brute: consider each element as majority and check if freq > N / 2
 # time: O(n ** 2)
 # space: O(1)
@@ -505,6 +532,41 @@ def maximumProfit(prices):
 
 ### L11 - Next permutation
 ```python
+'''
+A permutation of an array of integers is an arrangement of its members into a sequence or linear order.
+
+For example, for arr = [1,2,3], the following are all the permutations of arr: [1,2,3], [1,3,2], [2, 1, 3], [2, 3, 1], [3,1,2], [3,2,1].
+The next permutation of an array of integers is the next lexicographically greater permutation of its integer. More formally, if all the permutations of the array are sorted in one container according to their lexicographical order, then the next permutation of that array is the permutation that follows it in the sorted container. If such arrangement is not possible, the array must be rearranged as the lowest possible order (i.e., sorted in ascending order).
+
+For example, the next permutation of arr = [1,2,3] is [1,3,2].
+Similarly, the next permutation of arr = [2,3,1] is [3,1,2].
+While the next permutation of arr = [3,2,1] is [1,2,3] because [3,2,1] does not have a lexicographical larger rearrangement.
+Given an array of integers nums, find the next permutation of nums.
+
+The replacement must be in place and use only constant extra memory.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3]
+Output: [1,3,2]
+Example 2:
+
+Input: nums = [3,2,1]
+Output: [1,2,3]
+Example 3:
+
+Input: nums = [1,1,5]
+Output: [1,5,1]
+ 
+
+Constraints:
+
+1 <= nums.length <= 100
+0 <= nums[i] <= 100
+'''
+
 from typing import *
 
 # brute: generate all permutations + iterate through that list and find our given input + return its next
@@ -519,7 +581,7 @@ from typing import *
 # obs1: rav, rax, rbx 
 # ra is the longest common between 1 and 2, and deciding factor is the last char
 # rax and rbx have longest common as r only and deciding factor = ax, bx
-# so we try to go as far right as possible to figure out the boundary and the remaining chars are the deciders
+# so we try to go as far right as possible to figure out the boundary(common chars) and the remaining chars are the deciders
 #             0  1  2  3  4  5  6
 # arr[] = [2, 1, 5, 4, 3, 0 , 0]
 #                ind
@@ -583,6 +645,40 @@ def nextGreaterPermutation(A : List[int]) -> List[int]:
 ### L12 - Leaders in an array
 
 ```python
+'''
+Given an array A of positive integers. Your task is to find the leaders in the array. An element of the array is a leader if it is greater than all the elements to its right side or if it is equal to the maximum element on its right side. The rightmost element is always a leader. 
+
+Example 1:
+
+Input:
+n = 6
+A[] = {16,17,4,3,5,2}
+Output: 17 5 2
+Explanation: The first leader is 17 
+as it is greater than all the elements
+to its right.  Similarly, the next 
+leader is 5. The right most element 
+is always a leader so it is also 
+included.
+Example 2:
+
+Input:
+n = 5
+A[] = {10,4,2,4,1}
+Output: 10 4 4 1
+Explanation: 1 is the rightmost element and 4 is the element which is greater
+than all the elements to its right. Similarly another 4 is the element that is equal to the greatest element to its right and 10 is the greatest element in the whole array.
+Your Task:
+You don't need to read input or print anything. The task is to complete the function leader() which takes array A and n as input parameters and returns an array of leaders in order of their appearance.
+
+Expected Time Complexity: O(n)
+Expected Auxiliary Space: O(n)
+
+Constraints:
+1 <= n <= 107
+0 <= Ai <= 107
+'''
+
 from typing import *
 
 # brute: consider each element as superior and check all elements to its right if they are smaller or not
@@ -604,6 +700,31 @@ def superiorElements(a : List[int]) -> List[int]:
 ```
 ### L13 - Longest consecutive sequence
 ```python
+
+'''
+Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
+
+You must write an algorithm that runs in O(n) time.
+
+ 
+
+Example 1:
+
+Input: nums = [100,4,200,1,3,2]
+Output: 4
+Explanation: The longest consecutive elements sequence is [1, 2, 3, 4]. Therefore its length is 4.
+Example 2:
+
+Input: nums = [0,3,7,2,5,8,4,6,0,1]
+Output: 9
+ 
+
+Constraints:
+
+0 <= nums.length <= 105
+-109 <= nums[i] <= 109
+'''
+
 class Solution:
     # brute: consider each num as start of new sequence and traverse entire array to see its length
     # time:O(n**2)
@@ -628,6 +749,40 @@ class Solution:
 
 ### L14 - Set Matrix Zeroes | O(1) space
 ```python
+'''
+Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's.
+
+You must do it in place.
+
+ 
+
+Example 1:
+
+
+Input: matrix = [[1,1,1],[1,0,1],[1,1,1]]
+Output: [[1,0,1],[0,0,0],[1,0,1]]
+Example 2:
+
+
+Input: matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]
+Output: [[0,0,0,0],[0,4,5,0],[0,3,1,0]]
+ 
+
+Constraints:
+
+m == matrix.length
+n == matrix[0].length
+1 <= m, n <= 200
+-231 <= matrix[i][j] <= 231 - 1
+ 
+
+Follow up:
+
+A straightforward solution using O(mn) space is probably a bad idea.
+A simple improvement uses O(m + n) space, but still not the best solution.
+Could you devise a constant space solution?
+'''
+
 class Solution:
     # brute: set everything to -1 and then to 0
     # time: O(n**3)
@@ -693,6 +848,32 @@ class Solution:
 ```
 ### L15 - Rotate matrix or image by 90 degrees
 ```python
+'''
+You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise).
+
+You have to rotate the image in-place, which means you have to modify the input 2D matrix directly. DO NOT allocate another 2D matrix and do the rotation.
+
+ 
+
+Example 1:
+
+
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [[7,4,1],[8,5,2],[9,6,3]]
+Example 2:
+
+
+Input: matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
+Output: [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
+ 
+
+Constraints:
+
+n == matrix.length == matrix[i].length
+1 <= n <= 20
+-1000 <= matrix[i][j] <= 1000
+'''
+
 class Solution:
     # brute: use temp matrix and put elements according to rearrangement
     # time: O(n * m)
@@ -732,43 +913,85 @@ class Solution:
 ```
 ### L16 - Spiral Traversal of a matrix
 ```python
+'''
+Given an m x n matrix, return all elements of the matrix in spiral order.
+
+ 
+
+Example 1:
+
+
+Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+Output: [1,2,3,6,9,8,7,4,5]
+Example 2:
+
+
+Input: matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+Output: [1,2,3,4,8,12,11,10,9,5,6,7]
+ 
+
+Constraints:
+
+m == matrix.length
+n == matrix[i].length
+1 <= m, n <= 10
+-100 <= matrix[i][j] <= 100
+'''
+
 class Solution:
-    def spiralOrder(self, matrix : List[List[int]]) -> List[int]:
-    ROWS, COLS = len(matrix), len(matrix[0])
-    top, right, bottom, left = 0, COLS - 1, ROWS - 1, 0
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        n = len(matrix)
+        m = len(matrix[0])
+        top, bottom, left, right = 0, n - 1, 0, m - 1
 
-    ans = []
-    while left <= right and top <= bottom:
-        # for the first 2 loops, the above while condition is sufficient
-        for c in range(left, right + 1):
-            ans.append(matrix[top][c])
-        
-        top += 1
+        res = []
 
-        for r in range(top, bottom + 1):
-            ans.append(matrix[r][right])
-        
-        right -= 1
-        # for the next 2 loops, we have to check for conditions:
-        # if top <= bottom, then only go from right to left
-        # if left <= right, then only go from bottom to top
-        if top <= bottom:
-            for c in range(right, left - 1, -1):
-                ans.append(matrix[bottom][c])
-            
-            bottom -= 1
-
-        if left <= right:
-            for r in range(bottom, top - 1, -1):
-                ans.append(matrix[r][left])
-            
-            left += 1
-    return ans
+        # this check holds for the next 2 loops only, post that separate checks needed
+        while left <= right and top <= bottom: 
+            for i in range(left, right + 1): # left <= right is checked here
+                res.append(matrix[top][i]) 
+            top += 1
+            for i in range(top, bottom + 1): # top <= bottom is checked here
+                res.append(matrix[i][right])
+            right -= 1
+            if top <= bottom:
+                for i in range(right, left - 1, -1): # top <= bottom is not checked here
+                    res.append(matrix[bottom][i])
+                bottom -= 1
+            if left <= right:
+                for i in range(bottom, top - 1, -1): # left <= right is not checked here
+                    res.append(matrix[i][left])
+                left += 1
+        return res
 ```
 
 ### L17 - Count Subarray Sum Equals K
 
 ```python
+'''
+Given an array of integers nums and an integer k, return the total number of subarrays whose sum equals to k.
+
+A subarray is a contiguous non-empty sequence of elements within an array.
+
+ 
+
+Example 1:
+
+Input: nums = [1,1,1], k = 2
+Output: 2
+Example 2:
+
+Input: nums = [1,2,3], k = 3
+Output: 2
+ 
+
+Constraints:
+
+1 <= nums.length <= 2 * 104
+-1000 <= nums[i] <= 1000
+-107 <= k <= 107
+'''
+
 class Solution:
     # METHOD 1: brute force: generate all subarrays and keep track of runningSum
     def subarraySum(self, nums: List[int], k: int) -> int:
@@ -912,7 +1135,116 @@ class Solution:
 
 ### L20 & L21 - 3 sum and 4 sum
 ```python
+'''
+Given an array nums of n integers, return an array of all the unique quadruplets [nums[a], nums[b], nums[c], nums[d]] such that:
 
+0 <= a, b, c, d < n
+a, b, c, and d are distinct.
+nums[a] + nums[b] + nums[c] + nums[d] == target
+You may return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [1,0,-1,0,-2,2], target = 0
+Output: [[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]
+Example 2:
+
+Input: nums = [2,2,2,2,2], target = 8
+Output: [[2,2,2,2]]
+ 
+
+Constraints:
+
+1 <= nums.length <= 200
+-109 <= nums[i] <= 109
+-109 <= target <= 109
+'''
+class Solution:
+    def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
+        nums.sort()
+        res = []
+        n = len(nums)
+        for i in range(n - 4 + 1):
+            if i > 0 and nums[i] == nums[i - 1]:
+                continue
+            for j in range(i + 1, n - 3 + 1):
+                if j > i + 1 and nums[j] == nums[j - 1]:
+                    continue
+
+                l, r = j + 1, n - 1
+
+                while l < r:
+                    
+                    total = nums[i] + nums[j] + nums[l] + nums[r]
+
+                    if total > target:
+                        r -= 1
+                    elif total < target:
+                        l += 1
+                    else:
+                        res.append([nums[i], nums[j], nums[l], nums[r]])
+                        l += 1
+                        while l < r and nums[l] == nums[l - 1]:
+                            l += 1
+        return res
+```
+
+### Largest Subarray with 0 sum
+https://www.geeksforgeeks.org/problems/largest-subarray-with-0-sum/1?category%5B%5D=Hash&company%5B%5D=Amazon&page=1&query=category%5B%5DHashcompany%5B%5DAmazonpage1company%5B%5DAmazoncategory%5B%5DHash&utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=largest-subarray-with-0-sum
+```python
+'''
+Given an array having both positive and negative integers. The task is to compute the length of the largest subarray with sum 0.
+
+Example 1:
+
+Input:
+N = 8
+A[] = {15,-2,2,-8,1,7,10,23}
+Output: 5
+Explanation: The largest subarray with
+sum 0 will be -2 2 -8 1 7.
+Your Task:
+You just have to complete the function maxLen() which takes two arguments an array A and n, where n is the size of the array A and returns the length of the largest subarray with 0 sum.
+
+Expected Time Complexity: O(N).
+Expected Auxiliary Space: O(N).
+
+Constraints:
+1 <= N <= 105
+-1000 <= A[i] <= 1000, for each valid i
+'''
+#Your task is to complete this function
+#Your should return the required output
+class Solution:
+    def maxLen(self, n, arr):
+        hashMap = {}
+        Sum = 0
+        maxi = 0
+        for i in range(n):
+            Sum += arr[i]
+            if Sum == 0:
+                maxi = max(maxi, i + 1)
+            rem = Sum - 0
+            if rem in hashMap:
+                l = hashMap[rem]
+                maxi = max(maxi, i - l)
+            
+            if Sum not in hashMap:
+                hashMap[Sum] = i
+        return maxi
+#{ 
+ # Driver Code Starts
+if __name__=='__main__':
+    t= int(input())
+    for i in range(t):
+        n = int(input())
+        arr = list(map(int, input().strip().split()))
+        ob = Solution()
+        print(ob.maxLen(n ,arr))
+# Contributed by: Harshit Sidhwa
+# } Driver Code Ends
 ```
 
 ### L22 - Number of subarrays with XOR k
@@ -920,8 +1252,44 @@ class Solution:
 
 ```
 ### L23 - Merge overlapping intervals
+https://leetcode.com/problems/merge-intervals/description/
 ```python
+'''
+Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
 
+ 
+
+Example 1:
+
+Input: intervals = [[1,3],[2,6],[8,10],[15,18]]
+Output: [[1,6],[8,10],[15,18]]
+Explanation: Since intervals [1,3] and [2,6] overlap, merge them into [1,6].
+Example 2:
+
+Input: intervals = [[1,4],[4,5]]
+Output: [[1,5]]
+Explanation: Intervals [1,4] and [4,5] are considered overlapping.
+ 
+
+Constraints:
+
+1 <= intervals.length <= 104
+intervals[i].length == 2
+0 <= starti <= endi <= 104
+'''
+def merge(self, intervals):
+        intervals.sort(key = lambda x: x[0])
+        prevInterval = intervals[0]
+        res = []
+        for i in range(1, len(intervals)):
+            curInterval = intervals[i]
+            if prevInterval[1] < curInterval[0]:
+                res.append(prevInterval)
+                prevInterval = curInterval
+            else:
+                prevInterval[1] = max(prevInterval[1], curInterval[1])
+        res.append(prevInterval)
+        return res
 ```
 ### L24 - Merge sorted arrays without using extra space
 ```python
@@ -940,8 +1308,52 @@ class Solution:
 
 ```
 ### L28 - Maximum product subarray
+https://leetcode.com/problems/maximum-product-subarray/description/
 ```python
+'''
+Given an integer array nums, find a 
+subarray
+ that has the largest product, and return the product.
 
+The test cases are generated so that the answer will fit in a 32-bit integer.
+
+ 
+
+Example 1:
+
+Input: nums = [2,3,-2,4]
+Output: 6
+Explanation: [2,3] has the largest product 6.
+Example 2:
+
+Input: nums = [-2,0,-1]
+Output: 0
+Explanation: The result cannot be 2, because [-2,-1] is not a subarray.
+ 
+
+Constraints:
+
+1 <= nums.length <= 2 * 104
+-10 <= nums[i] <= 10
+The product of any prefix or suffix of nums is guaranteed to fit in a 32-bit integer.
+'''
+
+class Solution:
+    def maxProduct(self, nums: List[int]) -> int:
+        maxi = float("-inf")
+        prefix, suffix = 1, 1
+        n = len(nums)
+        for i in range(n):
+            if prefix == 0:
+                prefix = 1
+            if suffix == 0:
+                suffix = 1
+            prefix = prefix * nums[i]
+            suffix = suffix * nums[n - 1 - i]
+
+            maxi = max(maxi, prefix, suffix)
+
+        return maxi
 ```
 
 

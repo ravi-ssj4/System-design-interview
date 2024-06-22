@@ -676,7 +676,7 @@ def solution(n, edges):
     visited = set()
     pathVisited = set()
 
-    # starting from this node, if below 2 conditions are met, the node is safe
+    # starting from this node, if below 2 conditions are met, the node is un-safe
     # 1. its part of a cycle
     # 2. it leads to a cycle
     # in both cases, we return True from the for loop itself
