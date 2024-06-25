@@ -175,6 +175,7 @@ class Solution:
         
         return [firstOccurance(), lastOccurance()]
 ```
+
 ## Pattern 2: Array rotation: Find the sorted half first
 
 ### Search in rotated sorted array I
@@ -295,7 +296,6 @@ class Solution:
                 high = mid - 1
         return mini
 ```
-
 ### Find out how many times has an array been rotated
 https://www.geeksforgeeks.org/problems/rotation4723/1?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=rotation
 ```python
@@ -373,7 +373,6 @@ if __name__ == '__main__':
 
 # } Driver Code Ends
 ```
-
 ### Single element in sorted array
 https://leetcode.com/problems/single-element-in-a-sorted-array/description/
 ```python
@@ -448,7 +447,6 @@ class Solution:
                 else: # we are on the left half of the single elem -> go right
                     low = mid + 1
 ```
-
 ### Find peak element
 https://leetcode.com/problems/find-peak-element/submissions/1289004448/
 ```python
@@ -499,7 +497,6 @@ class Solution:
                 high = mid - 1 
         return -1
 ```
-
 ### Square root of a number
 https://www.geeksforgeeks.org/problems/square-root/0?utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=square-root
 ```python

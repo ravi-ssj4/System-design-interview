@@ -23,7 +23,6 @@ class Solution:
 # flag = 0 -> 1
 
 ```
-
 ### L1 | Remove duplicates from sorted array
 ```python
 class Solution:
@@ -47,7 +46,6 @@ class Solution:
             j += 1
         return i + 1
 ```
-
 ### L1 | Union of two sorted arrays
 ```python
 # brute: hashing using hashSet
@@ -91,17 +89,14 @@ class Solution:
                 
         return ans
 ```
-
 ### L1 | intersection of two sorted arrays
 ```python
 
 ```
-
 ### L2 | Left rotate array by D places
 ```python
 
 ```
-
 ### L2 | Move zeroes to the end
 ```python
 class Solution:
@@ -113,7 +108,6 @@ class Solution:
                 l += 1
             r += 1
 ```
-
 ### L3 | Find missing number
 ```python
 class Solution:
@@ -152,7 +146,6 @@ class Solution:
                 missing = missing ^ nums[i]
         return missing
 ```
-
 ### L3 | Every num appears twice but 1 num appears once. find that num
 ```python
 class Solution:
@@ -195,7 +188,6 @@ class Solution:
             missing = missing ^ n
         return missing
 ```
-
 ### L3 | Maximum consecutive 1s
 ```python
 class Solution:
@@ -307,9 +299,7 @@ def read(n: int, book: [int], target: int) -> str:
             return "YES"
     return "NO"
 ```
-
-### L6 - Sort an array of 0s, 1s and 2s
-
+### L6 | Sort an array of 0s, 1s and 2s
 ```python
 # O(2N) - take count of 0s, 1s and 2s and put them in the array
 def sortArray(arr, n):
@@ -352,8 +342,7 @@ def sortArray(arr, n):
 			arr[mid], arr[high] = arr[high], arr[mid]
 			high -= 1
 ```
-
-### L7 - Majority Element I
+### L7 | Majority Element I
 ```python
 '''
 Given an array nums of size n, return the majority element.
@@ -411,10 +400,10 @@ def majorityElement(v: [int]) -> int:
             cnt += 1
         else:
             cnt -= 1
-    
+    # Todo:
     return majElem
 ```
-### L8 - Kadane's algorithm
+### L8 | Kadane's algorithm
 
 ```python
 from os import *
@@ -462,7 +451,7 @@ def maxSubarraySum(arr, n) :
     # return [startIdx, endIdx]   
     return maxi if maxi >= 0 else 0
 ```
-### L9 - Rearrange array elements by sign
+### L9 | Rearrange array elements by sign
 ```python
 from typing import *
 # brute: put both pos and neg nos in separate arrays
@@ -506,8 +495,7 @@ def alternateNumbers(a : List[int]) -> List[int]:
 # variation 2: what if the number of pos and neg numbers are not equal
 
 ```
-
-### L10 - Best time to buy and sell stock
+### L10 | Best time to buy and sell stock
 ```python
 # brute: go through the array 2 times with i as the buying price and j as the selling price excluding the case when i == j
 # for each combination, calculate profit, and update maxProfit
@@ -529,8 +517,7 @@ def maximumProfit(prices):
     
     return maxProfit
 ```
-
-### L11 - Next permutation
+### L11 | Next permutation
 ```python
 '''
 A permutation of an array of integers is an arrangement of its members into a sequence or linear order.
@@ -642,7 +629,7 @@ def nextGreaterPermutation(A : List[int]) -> List[int]:
     reverseList(ind + 1, n - 1)
     return A
 ```
-### L12 - Leaders in an array
+### L12 | Leaders in an array
 
 ```python
 '''
@@ -698,7 +685,7 @@ def superiorElements(a : List[int]) -> List[int]:
     
     return res
 ```
-### L13 - Longest consecutive sequence
+### L13 | Longest consecutive sequence
 ```python
 
 '''
@@ -746,8 +733,7 @@ class Solution:
         return maxi
 
 ```
-
-### L14 - Set Matrix Zeroes | O(1) space
+### L14 | Set Matrix Zeroes | O(1) space
 ```python
 '''
 Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's.
@@ -846,7 +832,7 @@ class Solution:
 
         return matrix 
 ```
-### L15 - Rotate matrix or image by 90 degrees
+### L15 | Rotate matrix or image by 90 degrees
 ```python
 '''
 You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise).
@@ -911,7 +897,7 @@ class Solution:
         return mat
 
 ```
-### L16 - Spiral Traversal of a matrix
+### L16 | Spiral Traversal of a matrix
 ```python
 '''
 Given an m x n matrix, return all elements of the matrix in spiral order.
@@ -964,8 +950,7 @@ class Solution:
                 left += 1
         return res
 ```
-
-### L17 - Count Subarray Sum Equals K
+### L17 | Count Subarray Sum Equals K
 
 ```python
 '''
@@ -1028,8 +1013,7 @@ class Solution:
         return cnt
 
 ```
-
-### L18 - Pascal's Triangle
+### L18 | Pascal's Triangle
 ```python
 class Solution:
     def generate(self, numRows: int) -> List[List[int]]:
@@ -1049,8 +1033,7 @@ class Solution:
             res.append(generateRow(r + 1))
         return res
 ```
-
-### L19 - Majority Element II
+### L19 | Majority Element II
 ```python
 class Solution:
     '''
@@ -1132,7 +1115,6 @@ class Solution:
                     res.append(el2)
         return res
 ```
-
 ### L20 & L21 - 3 sum and 4 sum
 ```python
 '''
@@ -1190,7 +1172,6 @@ class Solution:
                             l += 1
         return res
 ```
-
 ### Largest Subarray with 0 sum
 https://www.geeksforgeeks.org/problems/largest-subarray-with-0-sum/1?category%5B%5D=Hash&company%5B%5D=Amazon&page=1&query=category%5B%5DHashcompany%5B%5DAmazonpage1company%5B%5DAmazoncategory%5B%5DHash&utm_source=youtube&utm_medium=collab_striver_ytdescription&utm_campaign=largest-subarray-with-0-sum
 ```python
@@ -1246,7 +1227,6 @@ if __name__=='__main__':
 # Contributed by: Harshit Sidhwa
 # } Driver Code Ends
 ```
-
 ### L22 - Number of subarrays with XOR k
 ```python
 
