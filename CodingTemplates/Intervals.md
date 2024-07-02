@@ -1,5 +1,36 @@
 ### Insert Interval
 ```python
+'''
+You are given an array of non-overlapping intervals intervals where intervals[i] = [starti, endi] represent the start and the end of the ith interval and intervals is sorted in ascending order by starti. You are also given an interval newInterval = [start, end] that represents the start and end of another interval.
+
+Insert newInterval into intervals such that intervals is still sorted in ascending order by starti and intervals still does not have any overlapping intervals (merge overlapping intervals if necessary).
+
+Return intervals after the insertion.
+
+Note that you don't need to modify intervals in-place. You can make a new array and return it.
+
+ 
+
+Example 1:
+
+Input: intervals = [[1,3],[6,9]], newInterval = [2,5]
+Output: [[1,5],[6,9]]
+Example 2:
+
+Input: intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
+Output: [[1,2],[3,10],[12,16]]
+Explanation: Because the new interval [4,8] overlaps with [3,5],[6,7],[8,10].
+ 
+
+Constraints:
+
+0 <= intervals.length <= 104
+intervals[i].length == 2
+0 <= starti <= endi <= 105
+intervals is sorted by starti in ascending order.
+newInterval.length == 2
+0 <= start <= end <= 105
+'''
 class Solution:
     # * non-overlapping intervals already
     # * already sorted in ascending order
@@ -54,6 +85,29 @@ class Solution:
 
 ### Merge Intervals
 ```python
+'''
+Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.
+
+ 
+
+Example 1:
+
+Input: intervals = [[1,3],[2,6],[8,10],[15,18]]
+Output: [[1,6],[8,10],[15,18]]
+Explanation: Since intervals [1,3] and [2,6] overlap, merge them into [1,6].
+Example 2:
+
+Input: intervals = [[1,4],[4,5]]
+Output: [[1,5]]
+Explanation: Intervals [1,4] and [4,5] are considered overlapping.
+ 
+
+Constraints:
+
+1 <= intervals.length <= 104
+intervals[i].length == 2
+0 <= starti <= endi <= 104
+'''
 class Solution:
     # eg 1: intervals = [[1, 3], [2, 6], [8, 10], [15, 18]]
 
@@ -182,6 +236,34 @@ Expected Output: [[1,5]]
 
 ### Non-overlapping intervals
 ```python
+'''
+Given an array of intervals intervals where intervals[i] = [starti, endi], return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
+
+ 
+
+Example 1:
+
+Input: intervals = [[1,2],[2,3],[3,4],[1,3]]
+Output: 1
+Explanation: [1,3] can be removed and the rest of the intervals are non-overlapping.
+Example 2:
+
+Input: intervals = [[1,2],[1,2],[1,2]]
+Output: 2
+Explanation: You need to remove two [1,2] to make the rest of the intervals non-overlapping.
+Example 3:
+
+Input: intervals = [[1,2],[2,3]]
+Output: 0
+Explanation: You don't need to remove any of the intervals since they're already non-overlapping.
+ 
+
+Constraints:
+
+1 <= intervals.length <= 105
+intervals[i].length == 2
+-5 * 104 <= starti < endi <= 5 * 104
+'''
 class Solution:
     # intervals = [[1, 2], [2, 3], [3, 4], [1, 3]]
     # output = 1 
@@ -325,6 +407,27 @@ Explanation: Removing the first interval makes all other intervals non-overlappi
 
 ### Meeting Rooms
 ```python
+'''
+Given an array of meeting time intervals where intervals[i] = [starti, endi], determine if a person could attend all meetings.
+
+ 
+
+Example 1:
+
+Input: intervals = [[0,30],[5,10],[15,20]]
+Output: false
+Example 2:
+
+Input: intervals = [[7,10],[2,4]]
+Output: true
+ 
+
+Constraints:
+
+0 <= intervals.length <= 104
+intervals[i].length == 2
+0 <= starti < endi <= 106
+'''
 class Solution:
     # intervals = [[0, 30], [5, 10], [15, 20]]
     # output = false
@@ -452,6 +555,26 @@ def test_canAttendMeetings(intervals, expected):
 
 ### Meeting Rooms II
 ```python
+'''
+Given an array of meeting time intervals intervals where intervals[i] = [starti, endi], return the minimum number of conference rooms required.
+
+ 
+
+Example 1:
+
+Input: intervals = [[0,30],[5,10],[15,20]]
+Output: 2
+Example 2:
+
+Input: intervals = [[7,10],[2,4]]
+Output: 1
+ 
+
+Constraints:
+
+1 <= intervals.length <= 104
+0 <= starti < endi <= 106
+'''
 class Solution:
     # intervals = [[0, 30], [5, 10], [15, 20]]
 
@@ -518,6 +641,35 @@ class Solution:
 ### Minimum Platforms
 https://www.geeksforgeeks.org/problems/minimum-platforms-1587115620/1
 ```python
+'''
+Given arrival and departure times of all trains that reach a railway station. Find the minimum number of platforms required for the railway station so that no train is kept waiting.
+Consider that all the trains arrive on the same day and leave on the same day. Arrival and departure time can never be the same for a train but we can have arrival time of one train equal to departure time of the other. At any given instance of time, same platform can not be used for both departure of a train and arrival of another train. In such cases, we need different platforms.
+
+Examples:
+
+Input: n = 6, arr[] = {0900, 0940, 0950, 1100, 1500, 1800}, 
+            dep[] = {0910, 1200, 1120, 1130, 1900, 2000}
+Output: 3
+Explanation: There are three trains during the time 0940 to 1200. So we need minimum 3 platforms.
+Input: n = 3, arr[] = {0900, 1235, 1100}, 
+            dep[] = {1000, 1240, 1200}
+Output: 1
+Explanation: All train times are mutually exlusive. So we need only one platform
+Input: n = 3, arr[] = {1000, 0935, 1100}, 
+            dep[] = {1200, 1240, 1130}
+Output: 3
+Explanation: All 3 trains have to be their from 11:00 to 11:30
+ 
+
+Note: Time intervals are in the 24-hour format(HHMM) , where the first two characters represent hour (between 00 to 23 ) and the last two characters represent minutes (this will be <= 59 and >= 0).
+
+Expected Time Complexity: O(nLogn)
+Expected Auxiliary Space: O(n)
+
+Constraints:
+1 ≤ n ≤ 50000
+0000 ≤ arr[i] ≤ dep[i] ≤ 2359
+'''
 class Solution:    
     #Function to find the minimum number of platforms required at the
     #railway station such that no train waits.

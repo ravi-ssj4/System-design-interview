@@ -838,6 +838,45 @@ class Solution:
 ### Leetcode: https://leetcode.com/problems/length-of-longest-subarray-with-at-most-k-frequency/description/
 
 ```python
+'''
+You are given an integer array nums and an integer k.
+
+The frequency of an element x is the number of times it occurs in an array.
+
+An array is called good if the frequency of each element in this array is less than or equal to k.
+
+Return the length of the longest good subarray of nums.
+
+A subarray is a contiguous non-empty sequence of elements within an array.
+
+ 
+
+Example 1:
+
+Input: nums = [1,2,3,1,2,3,1,2], k = 2
+Output: 6
+Explanation: The longest possible good subarray is [1,2,3,1,2,3] since the values 1, 2, and 3 occur at most twice in this subarray. Note that the subarrays [2,3,1,2,3,1] and [3,1,2,3,1,2] are also good.
+It can be shown that there are no good subarrays with length more than 6.
+Example 2:
+
+Input: nums = [1,2,1,2,1,2,1,2], k = 1
+Output: 2
+Explanation: The longest possible good subarray is [1,2] since the values 1 and 2 occur at most once in this subarray. Note that the subarray [2,1] is also good.
+It can be shown that there are no good subarrays with length more than 2.
+Example 3:
+
+Input: nums = [5,5,5,5,5,5,5], k = 4
+Output: 4
+Explanation: The longest possible good subarray is [5,5,5,5] since the value 5 occurs 4 times in this subarray.
+It can be shown that there are no good subarrays with length more than 4.
+ 
+
+Constraints:
+
+1 <= nums.length <= 105
+1 <= nums[i] <= 109
+1 <= k <= nums.length
+'''
 class Solution:
     # def maxSubarrayLength(self, nums: List[int], k: int) -> int:
     #     # brute force
@@ -877,6 +916,39 @@ class Solution:
 ### Leetcode HARD: https://leetcode.com/problems/length-of-the-longest-valid-substring/description/
 
 ```python
+'''
+You are given a string word and an array of strings forbidden.
+
+A string is called valid if none of its substrings are present in forbidden.
+
+Return the length of the longest valid substring of the string word.
+
+A substring is a contiguous sequence of characters in a string, possibly empty.
+
+ 
+
+Example 1:
+
+Input: word = "cbaaaabc", forbidden = ["aaa","cb"]
+Output: 4
+Explanation: There are 11 valid substrings in word: "c", "b", "a", "ba", "aa", "bc", "baa", "aab", "ab", "abc" and "aabc". The length of the longest valid substring is 4. 
+It can be shown that all other substrings contain either "aaa" or "cb" as a substring. 
+Example 2:
+
+Input: word = "leetcode", forbidden = ["de","le","e"]
+Output: 4
+Explanation: There are 11 valid substrings in word: "l", "t", "c", "o", "d", "tc", "co", "od", "tco", "cod", and "tcod". The length of the longest valid substring is 4.
+It can be shown that all other substrings contain either "de", "le", or "e" as a substring. 
+ 
+
+Constraints:
+
+1 <= word.length <= 105
+word consists only of lowercase English letters.
+1 <= forbidden.length <= 105
+1 <= forbidden[i].length <= 10
+forbidden[i] consists only of lowercase English letters.
+'''
 class Solution:
     # def longestValidSubstring(self, word: str, forbidden: List[str]) -> int:
     #     n = len(word)
@@ -934,6 +1006,33 @@ class Solution:
 
 ### Leetcode Medium: https://leetcode.com/problems/count-subarrays-where-max-element-appears-at-least-k-times/
 ```python
+'''
+You are given an integer array nums and a positive integer k.
+
+Return the number of subarrays where the maximum element of nums appears at least k times in that subarray.
+
+A subarray is a contiguous sequence of elements within an array.
+
+ 
+
+Example 1:
+
+Input: nums = [1,3,2,3,3], k = 2
+Output: 6
+Explanation: The subarrays that contain the element 3 at least 2 times are: [1,3,2,3], [1,3,2,3,3], [3,2,3], [3,2,3,3], [2,3,3] and [3,3].
+Example 2:
+
+Input: nums = [1,4,2,1], k = 3
+Output: 0
+Explanation: No subarray contains the element 4 at least 3 times.
+ 
+
+Constraints:
+
+1 <= nums.length <= 105
+1 <= nums[i] <= 106
+1 <= k <= 105
+'''
 class Solution:
     # def countSubarrays(self, nums: List[int], k: int) -> int:
     #     # brute force
@@ -975,6 +1074,31 @@ class Solution:
 ```
 ### Leetcode: https://leetcode.com/problems/repeated-dna-sequences/description/
 ```python
+'''
+The DNA sequence is composed of a series of nucleotides abbreviated as 'A', 'C', 'G', and 'T'.
+
+For example, "ACGAATTCCG" is a DNA sequence.
+When studying DNA, it is useful to identify repeated sequences within the DNA.
+
+Given a string s that represents a DNA sequence, return all the 10-letter-long sequences (substrings) that occur more than once in a DNA molecule. You may return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+Output: ["AAAAACCCCC","CCCCCAAAAA"]
+Example 2:
+
+Input: s = "AAAAAAAAAAAAA"
+Output: ["AAAAAAAAAA"]
+ 
+
+Constraints:
+
+1 <= s.length <= 105
+s[i] is either 'A', 'C', 'G', or 'T'.
+'''
 class Solution:
     def findRepeatedDnaSequences(self, s: str) -> List[str]:
         if len(s) < 10:

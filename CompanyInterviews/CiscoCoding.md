@@ -812,24 +812,29 @@ All the integers in s are in the range [1, 300].
 class Solution:
     def decodeString(self, s: str) -> str:
         stack = []
+
         for c in s:
-            if c != ']':
-                stack.append(c)
-            else:
-                substr = ""
-                while stack[-1] != "[":
-                    substr = stack.pop() + substr
-                
-                stack.pop() # for the '['
-
-                k = ""
+            if c == "]":
+                # build the substring
+                tempStr = ""
+                while stack and stack[-1] != "[":
+                    tempStr = stack.pop() + tempStr
+                stack.pop() # pop the "["
+                # build the number
+                tempNum = ""
                 while stack and stack[-1].isdigit():
-                    k = stack.pop() + k
+                    tempNum = stack.pop() + tempNum
                 
-                substr = int(k) * substr
+                multiplier = int(tempNum)
+            
+                # build the new substring after multiplying
+                newString = tempStr * multiplier
 
-                for char in substr:
+                for char in newString:
                     stack.append(char)
+            else:
+                stack.append(c)
+
         return "".join(stack)
 ```
 ### Can Place Flowers
